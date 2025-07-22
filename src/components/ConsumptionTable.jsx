@@ -28,7 +28,7 @@ const ConsumptionTable = () => {
     }))
   );
 
-  const [selectedRate, setSelectedRate] = useState('6');
+  const [selectedRate, setSelectedRate] = useState('4');
   const [averageCost, setAverageCost] = useState(0);
   const [initialPrice, setInitialPrice] = useState(0);
   const [growthRate, setGrowthRate] = useState('2.99');
@@ -113,7 +113,7 @@ const ConsumptionTable = () => {
     }));
   }, [averageMonthlyCost, selectedRate]);
 
-  const totalLuma = useMemo(() => {
+  const totalNaturgyEnsa = useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.value, 0);
   }, [chartData]);
   
@@ -126,7 +126,7 @@ const ConsumptionTable = () => {
   // Calcular el tamaño del sistema
   const systemSize = useMemo(() => {
     if (!filledConsumptions ) return 0; // Si faltan meses, no calcular
-    return totalConsumption / 1533;
+    return totalConsumption / 1250;
   }, [totalConsumption, filledConsumptions ]);
 
   // Calcular la cantidad de paneles
@@ -165,18 +165,18 @@ const ConsumptionTable = () => {
     <Container size="xl" p="md">
       {/* Header con el logo */}
       <Paper pb="md" style={{ display: 'flex', justifyContent: 'center', background: 'transparent' }}>
-        <img src={logo} alt="Logo de la empresa" style={{ height: '50px' }} />
+        <img src={logo} alt="Logo de la empresa" style={{ height: '150px' }} />
       </Paper>
       <Grid gutter="xl">
         <Grid.Col span={12}>
-          <Paper p="md" bg="dark.7" withBorder>
+          <Paper p="md"b withBorder>
             <Grid justify="space-between" align="center">
               <Grid.Col span="auto">
-                <Title order={1} c="white" display={{lg: 'block', base: 'none'}}>
+                <Title order={1} c="blue.9" display={{lg: 'block', base: 'none'}}>
                   <IconBolt size={28} style={{ marginRight: 10 }} />
                   Calculadora Energética
                 </Title>
-                <Title order={2} c="white" display={{lg: 'none', base: 'block'}}>
+                <Title order={2} c="blue.9" display={{lg: 'none', base: 'block'}}>
                   <IconBolt size={14} style={{ marginRight: 10 }} />
                   Calculadora Energética
                 </Title>
@@ -187,8 +187,9 @@ const ConsumptionTable = () => {
                   value={selectedRate}
                   onChange={setSelectedRate}
                   data={[
-                    { value: '6', label: 'Inflación PR 6%' },
+                    { value: '4', label: 'Inflación PA 4%' }
                   ]}
+                  defaultValue={[{ value: '4', label: 'Inflación PA 4%' }]}
                   leftSection={<IconChartLine size={18} />}
                 />
               </Grid.Col>
@@ -197,7 +198,7 @@ const ConsumptionTable = () => {
         </Grid.Col>
 
         <Grid.Col span={12}>
-          <Paper p="md" bg="dark.7" withBorder>
+          <Paper p="md" withBorder>
             <Table.ScrollContainer type="native" minWidth={500} >
             <Table striped highlightOnHover withColumnBorders>
               <Table.Thead>
@@ -240,14 +241,14 @@ const ConsumptionTable = () => {
                   </Table.Tr>
                 ))}
                  {/* Fila de promedios */}
-                  <Table.Tr style={{ fontWeight: 'bold', backgroundColor: theme.colors.blue[9] }}>
+                  <Table.Tr style={{ fontWeight: 'bold' }}>
                     <Table.Td>PROMEDIO</Table.Td>
                     <Table.Td><NumberFormatter thousandSeparator suffix=" kWh" value={averageConsumption.toFixed(2)}/></Table.Td>
                     <Table.Td><NumberFormatter thousandSeparator prefix="$ " value={averagePrice.toFixed(2)}/></Table.Td>
                     <Table.Td><NumberFormatter thousandSeparator prefix="$ " value={averageMonthlyCost.toFixed(2)} /></Table.Td>
                   </Table.Tr>
                    {/* Fila de totales */}
-                  <Table.Tr style={{ fontWeight: 'bold', backgroundColor: theme.colors.dark[5] }}>
+                  <Table.Tr style={{ fontWeight: 'bold' }}>
                     <Table.Td>TOTAL</Table.Td>
                     <Table.Td><NumberFormatter thousandSeparator suffix=" kWh" value={totalConsumption.toFixed(2)} /></Table.Td>
                     <Table.Td>-</Table.Td> {/* No se suma el precio */}
@@ -260,9 +261,9 @@ const ConsumptionTable = () => {
         </Grid.Col>
 
         <Grid.Col span={{lg: 6, base: 12}}>
-          <Paper p="md" bg="dark.7" withBorder>
-            <Title order={2} mb="md" c="white">
-              Proyección a 25 años con LUMA
+          <Paper p="md" withBorder>
+            <Title order={2} mb="md" c="blue.9">
+              Proyección a 25 años con Naturgy | Ensa
             </Title>
             <BarChart
               h={400}
@@ -282,14 +283,14 @@ const ConsumptionTable = () => {
                   <div style={{ 
                     display: 'flex', 
                     flexDirection: 'column',
-                    background: 'var(--mantine-color-dark-7)',
                     padding: '4px 8px',
+                    background: 'var(--mantine-color-white)',
                     borderRadius: 'var(--mantine-radius-default)'
                   }}>
                     <div style={{ 
                       fontWeight: 600, 
-                      color: '#fff',
                       marginBottom: '4px',
+                      background: 'var(--mantine-color-white)',
                       fontWeigth: 'bold'
                     }}>
                       {label}
@@ -318,8 +319,8 @@ const ConsumptionTable = () => {
           </Paper>
         </Grid.Col>
         <Grid.Col span={{ lg: 6, base: 12 }}>
-          <Paper p="md" bg="dark.7" withBorder>
-            <Title order={2} mb="md" c="white">
+          <Paper p="md" withBorder>
+            <Title order={2} mb="md" c="blue.9">
               Nueva Proyección
             </Title>
             <Group>
@@ -368,13 +369,12 @@ const ConsumptionTable = () => {
                     <div style={{ 
                       display: 'flex', 
                       flexDirection: 'column',
-                      background: 'var(--mantine-color-dark-7)',
                       padding: '4px 8px',
+                      background: 'var(--mantine-color-white)',
                       borderRadius: 'var(--mantine-radius-default)'
                     }}>
                       <div style={{ 
                         fontWeight: 600, 
-                        color: '#fff',
                         marginBottom: '4px',
                         fontWeigth: 'bold'
                       }}>
@@ -384,6 +384,7 @@ const ConsumptionTable = () => {
                         <div key={index} style={{
                           display: 'flex',
                           alignItems: 'center',
+                          background: 'var(--mantine-color-white)',
                           gap: '8px'
                         }}>
                           <div style={{
@@ -405,17 +406,17 @@ const ConsumptionTable = () => {
           </Paper>
         </Grid.Col>
         {/* Resumen de pagos */}
-        {(totalLuma > 0 || totalNewProjection > 0) && (
+        {(totalNaturgyEnsa > 0 || totalNewProjection > 0) && (
           <Grid.Col span={{ lg: 6, base: 12 }}>
 
-          <Paper p="md" bg="dark.7" withBorder>
-            <Title order={2} mb="md" c="white">Resumen de Pagos en 25 años</Title>
+          <Paper p="md" withBorder>
+            <Title order={2} mb="md" c="blue.9">Resumen de Pagos en 25 años</Title>
             <Table.ScrollContainer type="native" minWidth={500} >
               <Table striped highlightOnHover withColumnBorders>
                 <Table.Thead>                
                   <Table.Tr>
                     <Table.Td>
-                      Total Gastado en LUMA
+                      Total Gastado en Naturgy | Ensa
                     </Table.Td>
                     <Table.Td>
                     Total Ahorrado en Nueva Proyección
@@ -426,7 +427,7 @@ const ConsumptionTable = () => {
                   <Table.Tr>
                     <Table.Td>
                       <Text size="xl" c="red.4">
-                        <NumberFormatter thousandSeparator prefix="$ " value={totalLuma.toFixed(2)} />
+                        <NumberFormatter thousandSeparator prefix="$ " value={totalNaturgyEnsa.toFixed(2)} />
                       </Text>
                     </Table.Td>
                     <Table.Td>
@@ -442,8 +443,8 @@ const ConsumptionTable = () => {
           </Grid.Col>
         )}
         <Grid.Col span={{ lg: 6, base: 12 }}>
-          <Paper p="md" bg="dark.7" withBorder>
-              <Title order={2} mb="md" c="white">
+          <Paper p="md" withBorder>
+              <Title order={2} mb="md" c="blue.9">
                 Cálculo de Paneles Solares
               </Title>
               <NumberInput
