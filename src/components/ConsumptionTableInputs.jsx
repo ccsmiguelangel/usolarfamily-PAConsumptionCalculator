@@ -93,7 +93,7 @@ const ConsumptionTableInputs = () => {
                 <Table.Td>TOTAL</Table.Td>
                 <Table.Td><NumberFormatter thousandSeparator suffix=" kWh" value={totalConsumption.toFixed(2)} /></Table.Td>
                 <Table.Td>-</Table.Td> {/* No se suma el precio */}
-                <Table.Td><NumberFormatter thousandSeparator prefix="$ " value={totalMonthlyCost.toFixed(2)} /></Table.Td>
+                <Table.Td><NumberFormatter thousandSeparator prefix="$ " value={typeof totalMonthlyCost === 'number' && !isNaN(totalMonthlyCost) ? totalMonthlyCost : 0} /></Table.Td>
               </Table.Tr>
           </Table.Tbody>
         </Table>

@@ -8,9 +8,9 @@ export const ConsumptionProvider = ({ children }) => {
     Array.from({ length: 12 }, (_, i) => ({
       id: i,
       month: `Mes ${i + 1}`,
-      consumption: 0,
-      price: 0,
-      cost: 0
+      consumption: '',
+      cost: '',
+      price: 0
     }))
   );
 
@@ -135,7 +135,7 @@ export const ConsumptionProvider = ({ children }) => {
 
       // Calcular costo mensual solo si ambos valores son numéricos
       if (!isNaN(newItem.consumption) && !isNaN(newItem.cost)) {
-        newItem.price = newItem.consumption / newItem.cost;
+        newItem.price =  newItem.cost / newItem.consumption;
       } else {
         newItem.price = 0;
       }

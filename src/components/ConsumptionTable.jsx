@@ -1,6 +1,6 @@
 import { useConsumption } from './ConsumptionContext';
-import {
-  Container,
+import { 
+  Container, 
   Grid
 } from '@mantine/core';
 
@@ -10,7 +10,7 @@ import NaturgyProjectionChart from './NaturyProjectionChart';
 import NewProjectionChart from './NewProjectionChart';
 import SolarPanelCalculator from './SolarPanelCalculator';
 import PaymentSummary from './PaymentSummary';
-
+import ClientInfoForm from './ClientInfoForm';
 const ConsumptionTable = () => {
   const {
     totalNaturgyEnsa,
@@ -22,12 +22,13 @@ const ConsumptionTable = () => {
       <HeaderSection />
       <Grid gutter="xl">
         <ConsumptionTableInputs />
-        <NaturgyProjectionChart />
-        <NewProjectionChart />
         <SolarPanelCalculator />
-        {(totalNaturgyEnsa > 0 || totalNewProjection > 0) && (
+        <NaturgyProjectionChart />
+        {/* <NewProjectionChart /> */}
+              {(totalNaturgyEnsa > 0 || totalNewProjection > 0) && (
          <PaymentSummary />
         )}
+        <ClientInfoForm />
       </Grid>
     </Container>
   );
