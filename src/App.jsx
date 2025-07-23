@@ -2,7 +2,7 @@
 import { MantineProvider } from '@mantine/core';
 import '@mantine/core/styles.css';
 import ConsumptionTable from './components/ConsumptionTable';
-
+import { ConsumptionProvider } from './components/ConsumptionContext'
 // const theme = createTheme({
 //   primaryColor: 'blue',
 //   fontFamily: 'Inter, sans-serif',
@@ -38,7 +38,9 @@ function App() {
   return (
     // <MantineProvider theme={theme} defaultColorScheme="dark">
     <MantineProvider>
-      <ConsumptionTable />
+      <ConsumptionProvider>
+        <ConsumptionTable />
+      </ConsumptionProvider>
     </MantineProvider>
   );
 }

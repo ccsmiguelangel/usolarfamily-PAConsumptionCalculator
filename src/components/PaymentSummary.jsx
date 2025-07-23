@@ -1,0 +1,53 @@
+import { useConsumption } from './ConsumptionContext';
+import { 
+  Table, 
+  Paper, 
+  Title, 
+  Grid,
+  Text,
+  NumberFormatter ,
+} from '@mantine/core';
+
+const PaymentSummary = () => {
+  const { totalNaturgyEnsa, totalNewProjection } = useConsumption();
+
+  return(
+    <>
+     <Grid.Col span={{ lg: 6, base: 12 }}>
+      <Paper p="md" withBorder>
+        <Title order={2} mb="md" c="blue.9">Resumen de Pagos en 25 años</Title>
+        <Table.ScrollContainer type="native" minWidth={500} >
+          <Table striped highlightOnHover withColumnBorders>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Td>
+                  Total Gastado en Naturgy | Ensa
+                </Table.Td>
+                <Table.Td>
+                  Total Ahorrado en Nueva Proyección
+                </Table.Td>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              <Table.Tr>
+                <Table.Td>
+                  <Text size="xl" c="red.4">
+                    <NumberFormatter thousandSeparator prefix="$ " value={totalNaturgyEnsa.toFixed(2)} />
+                  </Text>
+                </Table.Td>
+                <Table.Td>
+                  <Text size="xl" c="green.4">
+                    <NumberFormatter thousandSeparator prefix="$ " value={totalNewProjection.toFixed(2)} />
+                  </Text>
+                </Table.Td>
+              </Table.Tr>
+            </Table.Tbody>
+          </Table>
+        </Table.ScrollContainer>
+      </Paper>
+      </Grid.Col>
+    </>
+  )
+}
+
+export default PaymentSummary;
