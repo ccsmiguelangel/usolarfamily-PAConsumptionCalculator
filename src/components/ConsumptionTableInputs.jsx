@@ -46,14 +46,15 @@ const ConsumptionTableInputs = () => {
             <Table.Tr>
               <Table.Th>Mes</Table.Th>
               <Table.Th>Consumo</Table.Th>
-              <Table.Th>Precio</Table.Th>
               <Table.Th>Costo Mensual</Table.Th>
+              <Table.Th>Precio</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
             {consumptions.map((row) => (
               <Table.Tr key={row.id}>
                 <Table.Td>{row.month}</Table.Td>
+                
                 <Table.Td>
                   <NumberInput
                     value={row.consumption}
@@ -65,11 +66,10 @@ const ConsumptionTableInputs = () => {
                   />
                 </Table.Td>
                 <Table.Td>
-                  { /* Error en e.target.value */ }
                   <NumberInput
-                    value={row.price}
-                    onChange={(e) => handleInputChange(row.id, 'price', Number(e))}
-                    placeholder="Ingrese precio"
+                    value={row.cost}
+                    onChange={(e) => handleInputChange(row.id, 'cost', Number(e))}
+                    placeholder="Ingrese costo mensual"
                     allowDecimal={true}
                     leftSection="$"
                     hideControls 
@@ -77,7 +77,7 @@ const ConsumptionTableInputs = () => {
                   />
                 </Table.Td>
                 <Table.Td>
-                  <NumberFormatter thousandSeparator prefix="$ " value={row.cost.toFixed(2)}/>
+                  <NumberFormatter thousandSeparator prefix="$ " value={row.price.toFixed(2)}/>
                 </Table.Td>
               </Table.Tr>
             ))}

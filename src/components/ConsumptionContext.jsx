@@ -8,8 +8,8 @@ export const ConsumptionProvider = ({ children }) => {
     Array.from({ length: 12 }, (_, i) => ({
       id: i,
       month: `Mes ${i + 1}`,
-      consumption: '',
-      price: '',
+      consumption: 0,
+      price: 0,
       cost: 0
     }))
   );
@@ -123,7 +123,6 @@ export const ConsumptionProvider = ({ children }) => {
 
   // Manejar cambios en los inputs
   const handleInputChange = (id, field, value) => {
-    // Reemplazar comas por puntos y convertir a número decimal
     const numericValue = parseFloat(value) || 0;
 
     const newData = consumptions.map(item => {
@@ -135,10 +134,10 @@ export const ConsumptionProvider = ({ children }) => {
       };
 
       // Calcular costo mensual solo si ambos valores son numéricos
-      if (!isNaN(newItem.consumption) && !isNaN(newItem.price)) {
-        newItem.cost = newItem.consumption * newItem.price;
+      if (!isNaN(newItem.consumption) && !isNaN(newItem.cost)) {
+        newItem.price = newItem.consumption / newItem.cost;
       } else {
-        newItem.cost = 0;
+        newItem.price = 0;
       }
 
       return newItem;
