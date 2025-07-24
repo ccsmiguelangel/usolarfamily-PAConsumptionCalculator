@@ -59,13 +59,13 @@ const ConsumptionTableInputs = () => {
             min={0}
             hideControls
           />
-          {/* <NumberInput
+          <NumberInput
             label="Costo mensual ($)"
             value={quickCost}
             onChange={setQuickCost}
             min={0}
             hideControls
-          /> */}
+          />
           <Button color="blue" onClick={fillAllMonthsWithQuickValues}>
             Fill out
           </Button>
