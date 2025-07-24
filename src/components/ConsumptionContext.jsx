@@ -184,6 +184,27 @@ export const ConsumptionProvider = ({ children }) => {
     })));
   };
 
+  // Área de un panel solar en m2
+  const panelArea = 2.6;
+
+  // Nuevo estado: metros cuadrados del techo
+  const [roofSquareMeters, setRoofSquareMeters] = useState(0);
+
+  // Área total ocupada por los paneles calculados
+  const totalPanelsArea = useMemo(() => {
+    return numberOfPanels * panelArea;
+  }, [numberOfPanels]);
+
+  // Máximo de paneles que caben en el techo
+  const maxPanelsByRoof = useMemo(() => {
+    return roofSquareMeters > 0 ? Math.floor(roofSquareMeters / panelArea) : 0;
+  }, [roofSquareMeters]);
+
+  // ¿Caben todos los paneles necesarios?
+  const canFitAllPanels = useMemo(() => {
+    return numberOfPanels <= maxPanelsByRoof;
+  }, [numberOfPanels, maxPanelsByRoof]);
+
   return (
     <ConsumptionContext.Provider value={{
       // Estados principales
@@ -194,6 +215,7 @@ export const ConsumptionProvider = ({ children }) => {
       panelWatts, setPanelWatts,
       clientInfo, setClientInfo,
       systemPriceMultiplier, setSystemPriceMultiplier,
+      roofSquareMeters, setRoofSquareMeters,
 
       // Funciones
       handleInputChange,
@@ -214,6 +236,10 @@ export const ConsumptionProvider = ({ children }) => {
       numberOfPanels,
       systemTotalPrice,
       systemTotalPriceAdjusted,
+      panelArea,
+      totalPanelsArea,
+      maxPanelsByRoof,
+      canFitAllPanels,
 
       quickConsumption, setQuickConsumption,
       quickCost, setQuickCost,
