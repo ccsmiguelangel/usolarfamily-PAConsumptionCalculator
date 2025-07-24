@@ -7,10 +7,10 @@ export const ConsumptionProvider = ({ children }) => {
   const [consumptions, setConsumptions] = useState(
     Array.from({ length: 12 }, (_, i) => ({
       id: i,
-      month: `Mes ${i + 1}`,
+      month: `Mes ${12 - i}`,
       consumption: '',
       cost: '',
-      price: 0
+      price: 0,
     }))
   );
 
@@ -177,27 +177,62 @@ export const ConsumptionProvider = ({ children }) => {
         [field]: numericValue
       };
 
-      // Calcular costo mensual solo si ambos valores son numéricos
-      if (!isNaN(newItem.consumption) && !isNaN(newItem.cost)) {
-        newItem.price =  newItem.cost / newItem.consumption;
-      } else {
-        newItem.price = 0;
+      // Si es el primer mes (id === 0), calcular precio cuando se ingresa costo
+      if (id === 0 && field === 'cost' && newItem.consumption > 0) {
+        newItem.price = newItem.cost / newItem.consumption;
       }
 
       return newItem;
     });
 
+    // Después de actualizar el primer mes, recalcular costos para meses 2-12
+    if (id === 0 && field === 'cost') {
+      const firstMonthPrice = newData[0]?.price || 0;
+      if (firstMonthPrice > 0) {
+        for (let i = 1; i < newData.length; i++) {
+          newData[i].price = firstMonthPrice;
+          newData[i].cost = newData[i].consumption * firstMonthPrice;
+        }
+      }
+    }
+
+    // Si se cambia el consumo en cualquier mes, recalcular costo con precio fijo
+    if (field === 'consumption') {
+      const firstMonthPrice = newData[0]?.price || 0;
+      if (firstMonthPrice > 0) {
+        newData[id].cost = newData[id].consumption * firstMonthPrice;
+        if (id > 0) {
+          newData[id].price = firstMonthPrice;
+        }
+      }
+    }
+
     setConsumptions(newData);
   };
 
   const fillAllMonthsWithQuickValues = () => {
-    setConsumptions(consumptions.map(item => ({
-      ...item,
-      consumption: quickConsumption,
-      cost: ((item.cost > 0) && item.cost)? item.cost: quickCost,
-      // cost: '',
-      price: ((quickConsumption > 0) && (quickCost)) ? quickCost / quickConsumption : item.cost? item.cost / quickConsumption: 0
-    })));
+    const newData = consumptions.map((item, index) => {
+      if (index === 0) {
+        // Para el primer mes, usar el costo y consumo ingresados y calcular precio
+        const calculatedPrice = (quickCost > 0 && quickConsumption > 0) ? quickCost / quickConsumption : 0;
+        return {
+          ...item,
+          consumption: quickConsumption,
+          cost: quickCost,
+          price: calculatedPrice
+        };
+      } else {
+        // Para los meses 2-12, usar el consumo ingresado y el precio del primer mes
+        const firstMonthPrice = (quickCost > 0 && quickConsumption > 0) ? quickCost / quickConsumption : 0;
+        return {
+          ...item,
+          consumption: quickConsumption,
+          cost: quickConsumption * firstMonthPrice,
+          price: firstMonthPrice
+        };
+      }
+    });
+    setConsumptions(newData);
   };
   
   const clearAllMonths = () => {
