@@ -14,7 +14,10 @@ const SolarPanelCalculator = () => {
     panelWatts, setPanelWatts,
     filledConsumptions,
     systemSize,
-    numberOfPanels
+    numberOfPanels,
+    systemTotalPrice,
+    systemPriceMultiplier, setSystemPriceMultiplier,
+    systemTotalPriceAdjusted
   } = useConsumption();
 
   return (
@@ -37,6 +40,19 @@ const SolarPanelCalculator = () => {
           rightSection="W"
           my="md"
         />
+        <NumberInput
+          label="Ajuste de precio por watt del sistema (%)"
+          description="Puedes aumentar o disminuir el precio por watt total del sistema. Ejemplo: -0.2 = -20%. Por defecto es el 1.45."
+          value={systemPriceMultiplier}
+          onChange={(value) => setSystemPriceMultiplier(Math.max(Number(value), -0.45))}
+          min={-0.4}
+          max={1}
+          step={0.01}
+          hideControls
+          rightSection="%"
+          my="md"
+          precision={2}
+        />
         {(!panelWatts || (panelWatts === 0) || !filledConsumptions) ? (
           <Text c="red" size="xl">
             Añade valor de mes faltante y los watts por panel.
@@ -52,6 +68,15 @@ const SolarPanelCalculator = () => {
                   <Table.Td>
                     Cantidad de paneles necesarios
                   </Table.Td>
+                  <Table.Td>
+                    Precio Total del Sistema Aproximado
+                  </Table.Td>
+                  {(systemPriceMultiplier || (systemPriceMultiplier !== 0)) ? (
+                  <Table.Td>
+                    Precio Total Ajustado
+                  </Table.Td>
+                  ): ''}
+
                 </Table.Tr>
               </Table.Thead>
               <Table.Tbody>
@@ -66,6 +91,19 @@ const SolarPanelCalculator = () => {
                       <NumberFormatter thousandSeparator value={numberOfPanels} />
                     </Text>
                   </Table.Td>
+                  <Table.Td>
+                    <Text size="lg" c="orange.6">
+                      <NumberFormatter thousandSeparator prefix="$ " value={systemTotalPrice.toFixed(2)} />
+                    </Text>
+                  </Table.Td>
+                  {(systemPriceMultiplier || (systemPriceMultiplier !== 0)) ? (
+                    <Table.Td>
+                      <Text size="lg" c="orange.8">
+                        <NumberFormatter thousandSeparator prefix="$ " value={systemTotalPriceAdjusted.toFixed(2)} />
+                      </Text>
+                    </Table.Td>
+                  ): ''}
+
                 </Table.Tr>
               </Table.Tbody>
             </Table>

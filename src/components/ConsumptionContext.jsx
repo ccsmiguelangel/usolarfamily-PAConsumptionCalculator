@@ -20,6 +20,9 @@ export const ConsumptionProvider = ({ children }) => {
   const [growthRate, setGrowthRate] = useState('2.99');
   const [panelWatts, setPanelWatts] = useState(0); // Estado para Panel Watts
   const [clientInfo, setClientInfo] = useState({})
+  const [quickConsumption, setQuickConsumption] = useState(0);
+  const [quickCost, setQuickCost] = useState(0);
+
   // Calcular promedios
   const averageConsumption = useMemo(() => {
     const validEntries = consumptions.filter(c => !isNaN(c.consumption) && c.consumption !== '');
@@ -121,6 +124,22 @@ export const ConsumptionProvider = ({ children }) => {
     return Math.ceil((systemSize * 1000) / panelWatts);
   }, [systemSize, panelWatts, filledConsumptions]);
 
+  // Calcular el precio total del sistema aproximado
+  const systemTotalPrice = useMemo(() => {
+    return systemSize > 0 ? systemSize * 1000 * 1.45 : 0;
+  }, [systemSize]);
+
+  // Nuevo estado: multiplicador del precio del sistema
+  const [systemPriceMultiplier, setSystemPriceMultiplier] = useState(0); // mínimo -0.4
+
+  // Precio ajustado según el multiplicador
+  const systemTotalPriceAdjusted = useMemo(() => {
+    let value = systemSize * 1000 * (1.45 + systemPriceMultiplier);
+    ((systemPriceMultiplier >= -0.45) && (systemSize > 0))? value : value = systemSize * 1000 * 1.45;
+
+    return value;
+  }, [systemTotalPrice, systemPriceMultiplier]);
+
   // Manejar cambios en los inputs
   const handleInputChange = (id, field, value) => {
     const numericValue = parseFloat(value) || 0;
@@ -146,6 +165,24 @@ export const ConsumptionProvider = ({ children }) => {
     setConsumptions(newData);
   };
 
+  const fillAllMonthsWithQuickValues = () => {
+    setConsumptions(consumptions.map(item => ({
+      ...item,
+      consumption: quickConsumption,
+      cost: quickCost,
+      price: quickConsumption > 0 ? quickCost / quickConsumption : 0
+    })));
+  };
+  
+  const clearAllMonths = () => {
+    setConsumptions(consumptions.map(item => ({
+      ...item,
+      consumption: '',
+      cost: '',
+      price: 0
+    })));
+  };
+
   return (
     <ConsumptionContext.Provider value={{
       // Estados principales
@@ -155,6 +192,7 @@ export const ConsumptionProvider = ({ children }) => {
       growthRate, setGrowthRate,
       panelWatts, setPanelWatts,
       clientInfo, setClientInfo,
+      systemPriceMultiplier, setSystemPriceMultiplier,
 
       // Funciones
       handleInputChange,
@@ -173,6 +211,13 @@ export const ConsumptionProvider = ({ children }) => {
       totalNewProjection,
       systemSize,
       numberOfPanels,
+      systemTotalPrice,
+      systemTotalPriceAdjusted,
+
+      quickConsumption, setQuickConsumption,
+      quickCost, setQuickCost,
+      fillAllMonthsWithQuickValues,
+      clearAllMonths,
     }}>
     {children}
     </ConsumptionContext.Provider>

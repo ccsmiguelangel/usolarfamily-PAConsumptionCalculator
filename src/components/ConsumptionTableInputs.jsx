@@ -2,20 +2,30 @@ import {
   Table, 
   NumberInput,
   Paper, 
+  Group,
+  Button,
   Title, 
+  Tooltip,
   Grid,
+  Divider,
   NumberFormatter ,
 } from '@mantine/core';
 import { IconBolt } from '@tabler/icons-react';
-import { useConsumption } from './ConsumptionContext';
+import { IconTrash } from '@tabler/icons-react';
 
+import { useConsumption } from './ConsumptionContext';
 import InflationSelector from './InflationSelector';
 
 const ConsumptionTableInputs = () => {
   const {
     consumptions, handleInputChange,
     averageConsumption, averagePrice, averageMonthlyCost,
-    totalConsumption, totalMonthlyCost
+    totalConsumption, totalMonthlyCost,
+
+    quickConsumption, setQuickConsumption,
+    quickCost, setQuickCost,
+    fillAllMonthsWithQuickValues,
+    clearAllMonths
   } = useConsumption();
 
   return(
@@ -37,9 +47,34 @@ const ConsumptionTableInputs = () => {
         </Grid>
       </Paper>
     </Grid.Col>
-
     <Grid.Col span={12}>
       <Paper p="md" withBorder>
+      <Title order={4} mb="sm">Quickly Fill Out</Title>
+        <Group gap="md" style={{'alignItems': 'end'}} span={{base: 12, sm: 6, md: 3}}>
+          <NumberInput
+            label="Consumo (kWh)"
+            value={quickConsumption}
+            onChange={setQuickConsumption}
+            min={0}
+            hideControls
+          />
+          <NumberInput
+            label="Costo mensual ($)"
+            value={quickCost}
+            onChange={setQuickCost}
+            min={0}
+            hideControls
+          />
+          <Button color="blue" onClick={fillAllMonthsWithQuickValues}>
+            Fill out
+          </Button>
+          <Tooltip label="Borrar todos los meses">
+            <Button color="red" variant="light" onClick={clearAllMonths}>
+              <IconTrash size={18} />
+            </Button>
+          </Tooltip>
+        </Group>
+        <Divider my="md" />
         <Table.ScrollContainer type="native" minWidth={500} >
         <Table striped highlightOnHover withColumnBorders>
           <Table.Thead>
