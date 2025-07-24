@@ -21,7 +21,7 @@ export const ConsumptionProvider = ({ children }) => {
   const [panelWatts, setPanelWatts] = useState(0); // Estado para Panel Watts
   const [clientInfo, setClientInfo] = useState({})
   const [quickConsumption, setQuickConsumption] = useState(0);
-  const [quickCost, setQuickCost] = useState(0);
+  const [quickCost, setQuickCost] = useState();
 
   // Calcular promedios
   const averageConsumption = useMemo(() => {
@@ -169,8 +169,9 @@ export const ConsumptionProvider = ({ children }) => {
     setConsumptions(consumptions.map(item => ({
       ...item,
       consumption: quickConsumption,
-      cost: quickCost,
-      price: quickConsumption > 0 ? quickCost / quickConsumption : 0
+      cost: ((item.cost > 0) && item.cost)? item.cost: quickCost,
+      // cost: '',
+      price: ((quickConsumption > 0) && (quickCost)) ? quickCost / quickConsumption : item.cost? item.cost / quickConsumption: 0
     })));
   };
   

@@ -58,13 +58,13 @@ const ConsumptionTableInputs = () => {
             min={0}
             hideControls
           />
-          <NumberInput
+          {/* <NumberInput
             label="Costo mensual ($)"
             value={quickCost}
             onChange={setQuickCost}
             min={0}
             hideControls
-          />
+          /> */}
           <Button color="blue" onClick={fillAllMonthsWithQuickValues}>
             Fill out
           </Button>
@@ -80,8 +80,8 @@ const ConsumptionTableInputs = () => {
           <Table.Thead>
             <Table.Tr>
               <Table.Th>Mes</Table.Th>
-              <Table.Th>Consumo</Table.Th>
               <Table.Th>Costo Mensual</Table.Th>
+              <Table.Th>Consumo</Table.Th>
               <Table.Th>Precio</Table.Th>
             </Table.Tr>
           </Table.Thead>
@@ -89,6 +89,17 @@ const ConsumptionTableInputs = () => {
             {consumptions.map((row) => (
               <Table.Tr key={row.id}>
                 <Table.Td>{row.month}</Table.Td>
+                <Table.Td>
+                  <NumberInput
+                    value={row.cost}
+                    onChange={(e) => handleInputChange(row.id, 'cost', Number(e))}
+                    placeholder="Ingrese costo mensual"
+                    allowDecimal={true}
+                    leftSection="$"
+                    hideControls 
+                    type="number"
+                  />
+                </Table.Td>
                 
                 <Table.Td>
                   <NumberInput
@@ -101,17 +112,6 @@ const ConsumptionTableInputs = () => {
                   />
                 </Table.Td>
                 <Table.Td>
-                  <NumberInput
-                    value={row.cost}
-                    onChange={(e) => handleInputChange(row.id, 'cost', Number(e))}
-                    placeholder="Ingrese costo mensual"
-                    allowDecimal={true}
-                    leftSection="$"
-                    hideControls 
-                    type="number"
-                  />
-                </Table.Td>
-                <Table.Td>
                   <NumberFormatter thousandSeparator prefix="$ " value={row.price.toFixed(2)}/>
                 </Table.Td>
               </Table.Tr>
@@ -119,16 +119,16 @@ const ConsumptionTableInputs = () => {
               {/* Fila de promedios */}
               <Table.Tr style={{ fontWeight: 'bold' }}>
                 <Table.Td>PROMEDIO</Table.Td>
+                <Table.Td><NumberFormatter thousandSeparator prefix="$ " value={averageMonthlyCost.toFixed(2)} /></Table.Td>
                 <Table.Td><NumberFormatter thousandSeparator suffix=" kWh" value={averageConsumption.toFixed(2)}/></Table.Td>
                 <Table.Td><NumberFormatter thousandSeparator prefix="$ " value={averagePrice.toFixed(2)}/></Table.Td>
-                <Table.Td><NumberFormatter thousandSeparator prefix="$ " value={averageMonthlyCost.toFixed(2)} /></Table.Td>
               </Table.Tr>
                 {/* Fila de totales */}
               <Table.Tr style={{ fontWeight: 'bold' }}>
                 <Table.Td>TOTAL</Table.Td>
+                <Table.Td><NumberFormatter thousandSeparator prefix="$ " value={typeof totalMonthlyCost === 'number' && !isNaN(totalMonthlyCost) ? totalMonthlyCost : 0} /></Table.Td>
                 <Table.Td><NumberFormatter thousandSeparator suffix=" kWh" value={totalConsumption.toFixed(2)} /></Table.Td>
                 <Table.Td>-</Table.Td> {/* No se suma el precio */}
-                <Table.Td><NumberFormatter thousandSeparator prefix="$ " value={typeof totalMonthlyCost === 'number' && !isNaN(totalMonthlyCost) ? totalMonthlyCost : 0} /></Table.Td>
               </Table.Tr>
           </Table.Tbody>
         </Table>
