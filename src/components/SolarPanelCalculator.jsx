@@ -5,9 +5,11 @@ import {
   Paper,
   Title,
   Grid,
+  Alert,
   Text,
   NumberFormatter,
 } from '@mantine/core';
+import { IconAlertTriangle } from '@tabler/icons-react';
 
 const SolarPanelCalculator = () => {
   const {
@@ -54,9 +56,9 @@ const SolarPanelCalculator = () => {
           precision={2}
         />
         {(!panelWatts || (panelWatts === 0) || !filledConsumptions) ? (
-          <Text c="red" size="xl">
+          <Alert color="red" icon={<IconAlertTriangle size={18} />}>
             Añade valor de mes faltante y los watts por panel.
-          </Text>
+          </Alert>
         ) : (
           <Table.ScrollContainer type="native" minWidth={500} >
             <Table striped highlightOnHover withColumnBorders>

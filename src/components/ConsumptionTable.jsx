@@ -7,9 +7,9 @@ import {
 import HeaderSection from './HeaderSection';
 import ConsumptionTableInputs from './ConsumptionTableInputs';
 import NaturgyProjectionChart from './NaturyProjectionChart';
-// import NewProjectionChart from './NewProjectionChart';
+import NewProjectionChart from './NewProjectionChart';
 import SolarPanelCalculator from './SolarPanelCalculator';
-// import PaymentSummary from './PaymentSummary';
+import PaymentSummary from './PaymentSummary';
 import RoofPanelCalculator from './RoofPanelCalculator'
 import ClientInfoForm from './ClientInfoForm';
 const ConsumptionTable = () => {
@@ -24,12 +24,12 @@ const ConsumptionTable = () => {
       <Grid gutter="xl">
         <ConsumptionTableInputs />
         <SolarPanelCalculator />
-        <NaturgyProjectionChart />
-        {/* <NewProjectionChart /> */}
-        {/* {(totalNaturgyEnsa > 0 || totalNewProjection > 0) && (
-         <PaymentSummary />
-        )} */}
         <RoofPanelCalculator />
+        <NaturgyProjectionChart />
+        <NewProjectionChart />
+        {(totalNaturgyEnsa > 0 || totalNewProjection > 0) && (
+         <PaymentSummary />
+        )}
         <ClientInfoForm />
       </Grid>
     </Container>

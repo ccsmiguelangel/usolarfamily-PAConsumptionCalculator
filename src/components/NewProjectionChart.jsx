@@ -1,81 +1,91 @@
 import { useConsumption } from './ConsumptionContext';
-import { 
-  NumberInput,
-  Select, 
-  Paper, 
-  Title, 
+import {
+  Paper,
+  Title,
   Grid,
+  NumberFormatter,
+  Select,
   Group,
-  NumberFormatter ,
+  Text
 } from '@mantine/core';
 import { BarChart } from '@mantine/charts';
-import { IconChartLine } from '@tabler/icons-react';
 
 const NewProjectionChart = () => {
   const {
-    initialPrice, setInitialPrice,
-    growthRate, setGrowthRate,
-    projectionData
+    loanRateFactor, setLoanRateFactor,
+    loanMonthlyPayment,
+    loanTotalPaid,
+    loanProjectionData,
+    systemTotalPriceAdjusted
   } = useConsumption();
 
-  return(
+  return (
     <Grid.Col span={{ lg: 6, base: 12 }}>
       <Paper p="md" withBorder>
         <Title order={2} mb="md" c="blue.9">
-          Nueva Proyección
+          Nueva Proyección (Crédito)
         </Title>
-        <Group>
-          {/* NumberInput para el precio inicial */}
-          <NumberInput
-            label="Precio inicial"
-            placeholder="Ingrese el precio inicial"
-            leftSection="$"
-            allowDecimal
-            hideControls
-            value={initialPrice}
-            onChange={(value) => setInitialPrice(value)}
-            mb="md"
-          />
-
-          {/* Select para la tasa de crecimiento */}
+        <Group mb="md">
           <Select
-            label="Tasa de crecimiento anual"
-            placeholder="Seleccione una tasa"
-            value={growthRate}
-            onChange={(value) => setGrowthRate(value)}
+            label="Tipo de crédito"
+            value={loanRateFactor}
+            onChange={setLoanRateFactor}
             data={[
-              { value: '0', label: '0% (Fijo)' },
-              { value: '2.99', label: '2.99%' },
+              { value: '6.5', label: 'Crédito 6.5%' },
+              { value: '10.5', label: 'Crédito 10.5%' },
             ]}
-            leftSection={<IconChartLine size={18} />}
-            mb="md"
+            style={{ minWidth: 250 }}
           />
+        </Group>
+        <Group>
+          <Text size="md">
+            <b>Precio total del sistema:</b>
+          </Text>
+          <Text>
+            <NumberFormatter thousandSeparator prefix="$ " value={systemTotalPriceAdjusted.toFixed(2)} />
+          </Text>
+        </Group>
+        <Group>
+          <Text size="md">
+            <b>Pago mensual estimado:</b>
+          </Text>
+          <Text>
+            <NumberFormatter thousandSeparator prefix="$ " value={loanMonthlyPayment.toFixed(2)} />
+          </Text>
+        </Group>
+        <Group>
+          <Text size="md">
+            <b>Total pagado en 12.5 años:</b>
+          </Text>
+          <Text>
+            <NumberFormatter thousandSeparator prefix="$ " value={loanTotalPaid.toFixed(2)} />
+          </Text>
         </Group>
         <div style={{ width: '100%', marginTop: '2rem' }}>
           <BarChart
-            h={400}
-            data={projectionData}
-            dataKey="year"
+            h={300}
+            data={loanProjectionData}
+            dataKey="month"
             orientation="vertical"
-            barProps={{ radius: 10 }}
-            series={[{ 
-              name: 'value', 
-              label: `Proyección a ${growthRate}% anual`,
+            barProps={{ radius: 6 }}
+            series={[{
+              name: 'payment',
+              label: `Pago mensual a ${loanRateFactor}%`,
             }]}
             valueFormatter={(value) => `$${value.toFixed(2)}`}
             gridAxis="none"
             tooltipAnimationDuration={300}
             tooltipProps={{
               content: ({ label, payload }) => (
-                <div style={{ 
-                  display: 'flex', 
+                <div style={{
+                  display: 'flex',
                   flexDirection: 'column',
                   padding: '4px 8px',
                   background: 'var(--mantine-color-white)',
                   borderRadius: 'var(--mantine-radius-default)'
                 }}>
-                  <div style={{ 
-                    fontWeight: 600, 
+                  <div style={{
+                    fontWeight: 600,
                     marginBottom: '4px',
                     fontWeigth: 'bold'
                   }}>
@@ -88,14 +98,8 @@ const NewProjectionChart = () => {
                       background: 'var(--mantine-color-white)',
                       gap: '8px'
                     }}>
-                      <div style={{
-                        width: '12px',
-                        height: '12px',
-                        backgroundColor: item.color,
-                        borderRadius: '2px'
-                      }} />
                       <span style={{ fontWeight: 500 }}>
-                      <NumberFormatter thousandSeparator prefix="$ " value={item.value.toFixed(2)} />
+                        <NumberFormatter thousandSeparator prefix="$ " value={item.value.toFixed(2)} />
                       </span>
                     </div>
                   ))}
@@ -106,7 +110,7 @@ const NewProjectionChart = () => {
         </div>
       </Paper>
     </Grid.Col>
-  )
-}
+  );
+};
 
 export default NewProjectionChart;

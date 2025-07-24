@@ -52,7 +52,8 @@ const ConsumptionTableInputs = () => {
       <Title order={4} mb="sm">Quickly Fill Out</Title>
         <Group gap="md" style={{'alignItems': 'end'}} span={{base: 12, sm: 6, md: 3}}>
           <NumberInput
-            label="Consumo (kWh)"
+            label="Consumo del último mes kWh"
+            description="Pago mensual del último mes $$ (sin atrazos)"
             value={quickConsumption}
             onChange={setQuickConsumption}
             min={0}

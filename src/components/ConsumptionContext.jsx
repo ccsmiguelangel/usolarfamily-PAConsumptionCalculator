@@ -140,6 +140,31 @@ export const ConsumptionProvider = ({ children }) => {
     return value;
   }, [systemTotalPrice, systemPriceMultiplier]);
 
+  // Factores de crédito
+  const [loanRateFactor, setLoanRateFactor] = useState('6.5'); // '6.5' o '10.5'
+  const loanFactors = {
+    '6.5': 0.009755,
+    '10.5': 0.0119976
+  };
+
+  // Pago mensual del crédito
+  const loanMonthlyPayment = useMemo(() => {
+    return systemTotalPriceAdjusted * loanFactors[loanRateFactor];
+  }, [systemTotalPriceAdjusted, loanRateFactor]);
+
+  // Total pagado en el crédito
+  const loanTotalPaid = useMemo(() => {
+    return loanMonthlyPayment * 150;
+  }, [loanMonthlyPayment]);
+
+  // Datos para la gráfica de pagos mensuales
+  const loanProjectionData = useMemo(() => {
+    return Array.from({ length: 150 }, (_, i) => ({
+      month: `Mes ${i + 1}`,
+      payment: loanMonthlyPayment
+    }));
+  }, [loanMonthlyPayment]);
+
   // Manejar cambios en los inputs
   const handleInputChange = (id, field, value) => {
     const numericValue = parseFloat(value) || 0;
@@ -216,6 +241,7 @@ export const ConsumptionProvider = ({ children }) => {
       clientInfo, setClientInfo,
       systemPriceMultiplier, setSystemPriceMultiplier,
       roofSquareMeters, setRoofSquareMeters,
+      loanRateFactor, setLoanRateFactor,
 
       // Funciones
       handleInputChange,
@@ -240,6 +266,9 @@ export const ConsumptionProvider = ({ children }) => {
       totalPanelsArea,
       maxPanelsByRoof,
       canFitAllPanels,
+      loanMonthlyPayment,
+      loanTotalPaid,
+      loanProjectionData,
 
       quickConsumption, setQuickConsumption,
       quickCost, setQuickCost,
