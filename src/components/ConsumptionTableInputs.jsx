@@ -45,46 +45,54 @@ const ConsumptionTableInputs = () => {
       </Paper>
     </Grid.Col>
 
+    {/* Quick Fill Out Paper */}
     <Grid.Col span={12}>
-      <Paper p="md" mb="md" withBorder>
-        <Title order={4} mb="sm">Llenado rápido de 12 meses</Title>
-        <Grid gutter="md" align="end">
-          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-            <NumberInput
-              label="Consumo Mensual"
-              value={quickConsumption}
-              onChange={setQuickConsumption}
-              min={0}
-              hideControls
-              rightSection="kWh"
-              fullWidth
-            />
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-            <NumberInput
-              label="Costo mensual ($)"
-              value={quickCost}
-              onChange={setQuickCost}
-              min={0}
-              hideControls
-              leftSection="$"
-              fullWidth
-            />
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-            <Button color="blue" fullWidth onClick={fillAllMonthsWithQuickValues} style={{ height: 40 }}>
-              Llenar 12 meses
-            </Button>
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-            <Tooltip label="Borrar todos los meses">
-              <Button color="red" variant="light" fullWidth onClick={clearAllMonths} style={{ height: 40 }}>
-                <IconTrash size={18} />
-              </Button>
-            </Tooltip>
-          </Grid.Col>
-        </Grid>
-      </Paper>
+      <Grid>
+        <Grid.Col span={{md: 8, base: 12}}>
+          <Paper p="md" mb="md" withBorder>
+            <Title order={4} mb="sm" ta="center">Llenado rápido de 12 meses</Title>
+            <Grid gutter="md">
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <NumberInput
+                  label="Consumo del último mes"
+                  value={quickConsumption}
+                  onChange={setQuickConsumption}
+                  min={0}
+                  hideControls
+                  rightSection="kWh"
+                  rightSectionWidth={50}
+                  placeholder="Ingrese consumo"
+                  fullWidth
+                />
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <NumberInput
+                  label="Costo del último mes ($)"
+                  value={quickCost}
+                  onChange={setQuickCost}
+                  min={0}
+                  hideControls
+                  leftSection="$"
+                  placeholder="Ingrese costo"
+                  fullWidth
+                />
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Button color="blue" fullWidth onClick={fillAllMonthsWithQuickValues}>
+                  Llenar 12 meses
+                </Button>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Tooltip label="Borrar todos los meses">
+                  <Button color="red" variant="light" fullWidth onClick={clearAllMonths}>
+                    <IconTrash size={18} />
+                  </Button>
+                </Tooltip>
+              </Grid.Col>
+            </Grid>
+          </Paper>
+        </Grid.Col>
+      </Grid>
     </Grid.Col>
 
     <Grid.Col span={12}>
@@ -109,7 +117,8 @@ const ConsumptionTableInputs = () => {
                     value={row.consumption}
                     onChange={(e) => handleInputChange(row.id, 'consumption', Number(e))}
                     rightSection="kWh"
-                    hideControls 
+                    rightSectionWidth={50}
+                    hideControls
                     placeholder="Ingrese consumo"
                     allowDecimal={false}
                   />
@@ -127,7 +136,7 @@ const ConsumptionTableInputs = () => {
                     />
                   ) : (
                     <NumberInput
-                      value={row.cost}
+                      value={Number(row.cost).toFixed(2)}
                       disabled
                       allowDecimal={true}
                       leftSection="$"

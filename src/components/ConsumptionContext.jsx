@@ -20,8 +20,8 @@ export const ConsumptionProvider = ({ children }) => {
   const [growthRate, setGrowthRate] = useState('2.99');
   const [panelWatts, setPanelWatts] = useState(0); // Estado para Panel Watts
   const [clientInfo, setClientInfo] = useState({})
-  const [quickConsumption, setQuickConsumption] = useState(0);
-  const [quickCost, setQuickCost] = useState();
+  const [quickConsumption, setQuickConsumption] = useState('');
+  const [quickCost, setQuickCost] = useState('');
 
   // Calcular promedios
   const averageConsumption = useMemo(() => {
@@ -134,11 +134,12 @@ export const ConsumptionProvider = ({ children }) => {
 
   // Precio ajustado según el multiplicador
   const systemTotalPriceAdjusted = useMemo(() => {
-    let value = systemSize * 1000 * (1.45 + systemPriceMultiplier);
-    ((systemPriceMultiplier >= -0.45) && (systemSize > 0))? value : value = systemSize * 1000 * 1.45;
-
-    return value;
-  }, [systemTotalPrice, systemPriceMultiplier]);
+    if (systemPriceMultiplier >= -0.45 && systemSize > 0) {
+      return systemSize * 1000 * (1.45 + systemPriceMultiplier);
+    } else {
+      return systemSize * 1000 * 1.45;
+    }
+  }, [systemSize, systemPriceMultiplier]);
 
   // Factores de crédito
   const [loanRateFactor, setLoanRateFactor] = useState('6.5'); // '6.5' o '10.5'
@@ -165,46 +166,77 @@ export const ConsumptionProvider = ({ children }) => {
     }));
   }, [loanMonthlyPayment]);
 
+  // Función para recalcular el precio del primer mes
+  const calculateFirstMonthPrice = (item, field, numericValue) => {
+    if (field === 'cost') {
+      return (item.consumption > 0) ? numericValue / item.consumption : 0;
+    } else if (field === 'consumption') {
+      return (item.cost > 0) ? item.cost / numericValue : 0;
+    }
+    return item.price;
+  };
+
+  // Función para recalcular costos de meses 2-12
+  const recalculateOtherMonthsCosts = (newData, newPrice) => {
+    newData.forEach((item, idx) => {
+      if (idx > 0) {
+        item.price = newPrice;
+        item.cost = item.consumption * newPrice;
+      }
+    });
+  };
+
+  // Función para resetear todos los valores cuando el consumo del primer mes es 0
+  const resetAllValuesWhenFirstConsumptionIsZero = (newData) => {
+    newData.forEach((item, idx) => {
+      item.price = 0;
+      if (idx > 0) {
+        item.cost = 0;
+      }
+    });
+  };
+
+  // Función para recalcular costo de un mes específico (meses 2-12)
+  const recalculateSpecificMonthCost = (item, firstMonthPrice) => {
+    return {
+      ...item,
+      cost: item.consumption * firstMonthPrice,
+      price: firstMonthPrice
+    };
+  };
+
   // Manejar cambios en los inputs
   const handleInputChange = (id, field, value) => {
     const numericValue = parseFloat(value) || 0;
 
-    const newData = consumptions.map(item => {
+    const newData = consumptions.map((item, idx) => {
       if (item.id !== id) return item;
 
-      const newItem = {
-        ...item,
-        [field]: numericValue
-      };
+      let newItem = { ...item, [field]: numericValue };
 
-      // Si es el primer mes (id === 0), calcular precio cuando se ingresa costo
-      if (id === 0 && field === 'cost' && newItem.consumption > 0) {
-        newItem.price = newItem.cost / newItem.consumption;
+      // Solo para meses 2-12, recalcula el costo automáticamente al cambiar el consumo
+      if (id > 0 && field === 'consumption') {
+        const firstMonthPrice = consumptions[0]?.price || 0;
+        newItem = recalculateSpecificMonthCost(newItem, firstMonthPrice);
+      }
+
+      // Para el primer mes, recalcula el precio si ambos valores son válidos
+      if (id === 0) {
+        newItem.price = calculateFirstMonthPrice(item, field, numericValue);
       }
 
       return newItem;
     });
 
-    // Después de actualizar el primer mes, recalcular costos para meses 2-12
-    if (id === 0 && field === 'cost') {
-      const firstMonthPrice = newData[0]?.price || 0;
-      if (firstMonthPrice > 0) {
-        for (let i = 1; i < newData.length; i++) {
-          newData[i].price = firstMonthPrice;
-          newData[i].cost = newData[i].consumption * firstMonthPrice;
-        }
-      }
+    // Si cambió el precio del primer mes, recalcular costos de todos los demás meses
+    if (id === 0 && (field === 'cost' || field === 'consumption')) {
+      const newPrice = newData[0]?.price || 0;
+      recalculateOtherMonthsCosts(newData, newPrice);
     }
 
-    // Si se cambia el consumo en cualquier mes, recalcular costo con precio fijo
-    if (field === 'consumption') {
-      const firstMonthPrice = newData[0]?.price || 0;
-      if (firstMonthPrice > 0) {
-        newData[id].cost = newData[id].consumption * firstMonthPrice;
-        if (id > 0) {
-          newData[id].price = firstMonthPrice;
-        }
-      }
+    // Si el consumo del primer mes es 0, resetear todos los precios y costos a 0
+    if (id === 0 && field === 'consumption' && numericValue === 0) {
+      resetAllValuesWhenFirstConsumptionIsZero(newData);
     }
 
     setConsumptions(newData);
