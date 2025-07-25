@@ -8,7 +8,7 @@ import {
   Button,
   Tooltip
 } from '@mantine/core';
-import { IconBolt, IconTrash } from '@tabler/icons-react';
+import { IconNotebook, IconTrash, IconBolt } from '@tabler/icons-react';
 import { useConsumption } from './ConsumptionContext';
 
 import InflationSelector from './InflationSelector';
@@ -36,7 +36,7 @@ const ConsumptionTableInputs = () => {
               Calculadora Energética
             </Title>
             <Title order={2} c="blue.9" display={{lg: 'none', base: 'block'}}>
-              <IconBolt size={14} style={{ marginRight: 10 }} />
+              <IconNotebook size={14} style={{ marginRight: 10 }} />
               Calculadora Energética
             </Title>
           </Grid.Col>
@@ -50,9 +50,10 @@ const ConsumptionTableInputs = () => {
       <Grid>
         <Grid.Col span={{md: 8, base: 12}}>
           <Paper p="md" mb="md" withBorder>
+            <IconNotebook size={28} style={{ marginRight: 10 }} />
             <Title order={4} mb="sm" ta="center">Llenado rápido de 12 meses</Title>
             <Grid gutter="md">
-              <Grid.Col span={{ base: 12, md: 6 }}>
+              <Grid.Col span={6}>
                 <NumberInput
                   label="Consumo del último mes"
                   value={quickConsumption}
@@ -65,7 +66,7 @@ const ConsumptionTableInputs = () => {
                   fullWidth
                 />
               </Grid.Col>
-              <Grid.Col span={{ base: 12, md: 6 }}>
+              <Grid.Col span={6}>
                 <NumberInput
                   label="Costo del último mes ($)"
                   value={quickCost}
