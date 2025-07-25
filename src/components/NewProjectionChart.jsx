@@ -8,14 +8,14 @@ import {
   Group,
   Text
 } from '@mantine/core';
-import { BarChart } from '@mantine/charts';
-
+import { AreaChart } from '@mantine/charts';
+import PaymentSummary from './PaymentSummary';
 const NewProjectionChart = () => {
   const {
     loanRateFactor, setLoanRateFactor,
     loanMonthlyPayment,
     loanTotalPaid,
-    loanProjectionData,
+    comparisonProjectionData,
     systemTotalPriceAdjusted
   } = useConsumption();
 
@@ -23,7 +23,7 @@ const NewProjectionChart = () => {
     <Grid.Col span={{ lg: 6, base: 12 }}>
       <Paper p="md" withBorder>
         <Title order={2} mb="md" c="blue.9">
-          Nueva Proyección (Crédito)
+          Comparación a 25 Años
         </Title>
         <Group mb="md">
           <Select
@@ -53,61 +53,96 @@ const NewProjectionChart = () => {
             <NumberFormatter thousandSeparator prefix="$ " value={loanMonthlyPayment.toFixed(2)} />
           </Text>
         </Group>
-        <Group>
+        {/* <Group>
           <Text size="md">
             <b>Total pagado en 12.5 años:</b>
           </Text>
           <Text>
             <NumberFormatter thousandSeparator prefix="$ " value={loanTotalPaid.toFixed(2)} />
           </Text>
-        </Group>
+        </Group> */}
         <div style={{ width: '100%', marginTop: '2rem' }}>
-          <BarChart
-            h={300}
-            data={loanProjectionData}
-            dataKey="month"
-            orientation="vertical"
-            barProps={{ radius: 6 }}
-            series={[{
-              name: 'payment',
-              label: `Pago mensual a ${loanRateFactor}%`,
-            }]}
+          <AreaChart
+            h={400}
+            data={comparisonProjectionData}
+            dataKey="year"
+            type="linear"
+            curveType="linear"
+            connectNulls
+            series={[
+              {
+                name: 'naturgy',
+                label: 'Naturgy | Ensa',
+                color: 'red.6',
+                strokeWidth: 1
+              },
+              {
+                name: 'newProjection',
+                label: `Nueva Proyección (${loanRateFactor}%)`,
+                color: 'blue.6',
+                strokeWidth: 1
+              }
+            ]}
             valueFormatter={(value) => `$${value.toFixed(2)}`}
-            gridAxis="none"
+            gridAxis="x"
             tooltipAnimationDuration={300}
+            yAxisProps={{
+              tickFormatter: (value) => `$${value.toFixed(0)}`
+            }}
+            xAxisProps={{
+              tickFormatter: (value) => `Año ${value}`
+            }}
             tooltipProps={{
-              content: ({ label, payload }) => (
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  padding: '4px 8px',
-                  background: 'var(--mantine-color-white)',
-                  borderRadius: 'var(--mantine-radius-default)'
-                }}>
+              content: ({ label, payload }) => {
+                // Filtrar payload para evitar duplicados
+                const uniquePayload = payload?.filter((item, index, self) => 
+                  index === self.findIndex(p => p.name === item.name)
+                );
+                
+                return (
                   <div style={{
-                    fontWeight: 600,
-                    marginBottom: '4px',
-                    fontWeigth: 'bold'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    padding: '8px 12px',
+                    background: 'var(--mantine-color-white)',
+                    borderRadius: 'var(--mantine-radius-default)',
+                    border: '1px solid var(--mantine-color-gray-3)',
+                    boxShadow: 'var(--mantine-shadow-md)'
                   }}>
-                    {label}
-                  </div>
-                  {payload?.map((item, index) => (
-                    <div key={index} style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      background: 'var(--mantine-color-white)',
-                      gap: '8px'
+                    <div style={{
+                      fontWeight: 600,
+                      marginBottom: '8px',
+                      fontSize: '14px'
                     }}>
-                      <span style={{ fontWeight: 500 }}>
-                        <NumberFormatter thousandSeparator prefix="$ " value={item.value.toFixed(2)} />
-                      </span>
+                      Año {label}
                     </div>
-                  ))}
-                </div>
-              )
+                    {uniquePayload?.map((item, index) => (
+                      <div key={index} style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: '12px',
+                        marginBottom: '4px'
+                      }}>
+                        <span style={{ 
+                          fontWeight: 500,
+                          color: item.color,
+                          fontSize: '13px'
+                        }}>
+                          {item.name === 'naturgy' ? 'Naturgy | Ensa' : `Nueva Proyección (${loanRateFactor}%)`}:
+                        </span>
+                        <span style={{ fontWeight: 600 }}>
+                          <NumberFormatter thousandSeparator prefix="$ " value={item.value.toFixed(2)} />
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
             }}
           />
         </div>
+        <PaymentSummary />
       </Paper>
     </Grid.Col>
   );

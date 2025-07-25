@@ -198,13 +198,41 @@ export const ConsumptionProvider = ({ children }) => {
     return loanMonthlyPayment * 150;
   }, [loanMonthlyPayment]);
 
-  // Datos para la gráfica de pagos mensuales
-  const loanProjectionData = useMemo(() => {
-    return Array.from({ length: 150 }, (_, i) => ({
-      month: `Mes ${i + 1}`,
-      payment: loanMonthlyPayment
-    }));
-  }, [loanMonthlyPayment]);
+  // Datos para el gráfico de comparación a 25 años
+  const comparisonProjectionData = useMemo(() => {
+    if (loanMonthlyPayment <= 0 || averageMonthlyCost <= 0) return [];
+    
+    const years = 25;
+    const months = years * 12;
+    
+    return Array.from({ length: months }, (_, i) => {
+      const year = Math.floor(i / 12) + 1;
+      const month = i + 1;
+      
+      // Naturgy/Ensa: costo mensual con inflación anual
+      const naturgyMonthlyCost = averageMonthlyCost * Math.pow(1 + (Number(growthRate) / 100), Math.floor(i / 12));
+      
+      // Nueva proyección: pago mensual del crédito (financiamiento por 150 meses = 12.5 años)
+      let newProjectionMonthlyCost = 0;
+      if (month <= 150) {
+        // Pago completo hasta mes 150 (12.5 años)
+        newProjectionMonthlyCost = loanMonthlyPayment;
+      } else if (month <= 156) {
+        // Año 13: pago reducido (menos de la mitad porque el financiamiento ya terminó)
+        newProjectionMonthlyCost = loanMonthlyPayment * 0.3;
+      } else {
+        // Después del año 13: sin pago
+        newProjectionMonthlyCost = 0;
+      }
+      
+      return {
+        year: year,
+        month: month,
+        naturgy: naturgyMonthlyCost,
+        newProjection: newProjectionMonthlyCost
+      };
+    });
+  }, [loanMonthlyPayment, averageMonthlyCost, growthRate]);
 
   // Función para recalcular el precio del primer mes
   const calculateFirstMonthPrice = (item, field, numericValue) => {
@@ -380,7 +408,7 @@ export const ConsumptionProvider = ({ children }) => {
       canFitAllPanels,
       loanMonthlyPayment,
       loanTotalPaid,
-      loanProjectionData,
+      comparisonProjectionData,
 
       quickConsumption, setQuickConsumption,
       quickCost, setQuickCost,
