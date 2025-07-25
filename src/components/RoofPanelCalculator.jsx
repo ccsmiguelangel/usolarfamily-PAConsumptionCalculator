@@ -7,6 +7,7 @@ const RoofPanelCalculator = () => {
     roofSquareMeters, setRoofSquareMeters,
     panelArea,
     numberOfPanels,
+    totalPanelsWithAdjustment,
     totalPanelsArea,
     maxPanelsByRoof,
     canFitAllPanels
@@ -58,11 +59,11 @@ const RoofPanelCalculator = () => {
               </Alert>
             ) : canFitAllPanels ? (
               <Alert color="green" icon={<IconCheck size={18} />}>
-                ¡Puedes instalar los {numberOfPanels} paneles necesarios para tu consumo!
+                ¡Puedes instalar los {totalPanelsWithAdjustment} paneles necesarios para tu consumo!
               </Alert>
             ) : (
               <Alert color="red" icon={<IconAlertTriangle size={18} />}>
-                Solo puedes instalar hasta {maxPanelsByRoof} paneles en tu techo. Para tu consumo se requieren {numberOfPanels} paneles.
+                Solo puedes instalar hasta {maxPanelsByRoof} paneles en tu techo. Para tu consumo se requieren {totalPanelsWithAdjustment} paneles.
               </Alert>
             )}
           </Grid.Col>

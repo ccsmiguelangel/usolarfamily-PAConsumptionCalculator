@@ -14,7 +14,6 @@ import { IconAlertTriangle } from '@tabler/icons-react';
 const SolarPanelCalculator = () => {
   const {
     panelWatts, setPanelWatts,
-    totalPanelsWatts,
     filledConsumptions,
     systemSize,
     numberOfPanels,
@@ -24,6 +23,7 @@ const SolarPanelCalculator = () => {
     systemTotalPriceAdjusted,
     additionalPanels, setAdditionalPanels,
     totalPanelsWithAdjustment,
+    totalPanelsWatts,
     totalConsumption
   } = useConsumption();
 
@@ -39,6 +39,7 @@ const SolarPanelCalculator = () => {
             <NumberInput
               label="Ajuste de precio por watt del sistema"
               description="Puedes aumentar o disminuir el precio por watt total del sistema. Ejemplo: 0.2"
+              placeholder="Ej: 0.2"
               value={systemPriceMultiplier}
               onChange={(value) => setSystemPriceMultiplier(Math.max(Number(value), -0.3))}
               min={-0.3}
@@ -79,7 +80,7 @@ const SolarPanelCalculator = () => {
             />
           </Grid.Col>
         </Grid>
-        {(!panelWatts || (panelWatts === 0) || !filledConsumptions) ? (
+        {(!panelWatts || (Number(panelWatts) === 0) || !filledConsumptions) ? (
           <Alert color="red" icon={<IconAlertTriangle size={18} />}>
             Añade valor de mes faltante y los watts por panel.
           </Alert>
@@ -89,16 +90,16 @@ const SolarPanelCalculator = () => {
               <Table.Thead>
                 <Table.Tr>
                   <Table.Td>
-                    Tamaño del sistema
+                    Tamaño del sistema según consumo
                   </Table.Td>
                   <Table.Td>
                     Cantidad de paneles necesarios
                   </Table.Td>
                   
            
-                  {(systemPriceMultiplier || (systemPriceMultiplier !== 0)) ? (
+                  {(systemPriceMultiplier && (Number(systemPriceMultiplier) !== 0)) ? (
                   <Table.Td>
-                    Precio Total
+                    Precio Total Ajustado
                   </Table.Td>
                   ): (
                     <Table.Td>
@@ -119,20 +120,20 @@ const SolarPanelCalculator = () => {
                     <Text size="xl" c="green.4">
                       <NumberFormatter thousandSeparator value={totalPanelsWithAdjustment} />
                     </Text>
-                    {additionalPanels !== 0 && (
+                    {Number(additionalPanels) !== 0 && (
                       <Text size="sm" c="gray.6">
-                        (Base: {numberOfPanels} + Ajuste: {additionalPanels > 0 ? '+' : ''}{additionalPanels})
+                        (Base: {numberOfPanels} + Ajuste: {Number(additionalPanels) > 0 ? '+' : ''}{additionalPanels})
                       </Text>
                     )}
-                    <Text size="sm" c="blue.6" mt="xs">
+                    <Text size="sm" c="blue.6">
                       Cobertura: {consumptionCoveragePercentage.toFixed(1)}% del consumo anual
                     </Text>
-                    <Text size="xs" c="gray.5" mt="xs">
-                      Con {totalPanelsWatts}kW por paneles
+                    <Text size="xs" c="gray.5">
+                      Con {totalPanelsWatts.toFixed(3)} kW total de paneles
                     </Text>
                   </Table.Td>
                   
-                  {(systemPriceMultiplier || (systemPriceMultiplier !== 0)) ? (
+                  {(systemPriceMultiplier && (Number(systemPriceMultiplier) !== 0)) ? (
                     <Table.Td>
                       <Text size="lg" c="orange.8">
                         <NumberFormatter thousandSeparator prefix="$ " value={systemTotalPriceAdjusted.toFixed(2)} />

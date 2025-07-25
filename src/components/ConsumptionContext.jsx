@@ -18,15 +18,14 @@ export const ConsumptionProvider = ({ children }) => {
   const [averageCost, setAverageCost] = useState(0);
   const [initialPrice, setInitialPrice] = useState(0);
   const [growthRate, setGrowthRate] = useState('2.99');
-  const [panelWatts, setPanelWatts] = useState(0); // Estado para Panel Watts
+  const [panelWatts, setPanelWatts] = useState(''); // Estado para Panel Watts
   const [clientInfo, setClientInfo] = useState({})
   const [quickConsumption, setQuickConsumption] = useState('');
   const [quickCost, setQuickCost] = useState('');
-  const [additionalPanels, setAdditionalPanels] = useState(0); // Paneles adicionales o a quitar
+  const [additionalPanels, setAdditionalPanels] = useState(''); // Paneles adicionales o a quitar
   const [totalPanelsWatts, setTotalPanelsWatts] = useState(0);
   const [annualProduction, setAnnualProduction] = useState(0);
   const [coverage, setCoverage] = useState(0);
-  
   // Calcular promedios
   const averageConsumption = useMemo(() => {
     const validEntries = consumptions.filter(c => !isNaN(c.consumption) && c.consumption !== '');
@@ -124,42 +123,63 @@ export const ConsumptionProvider = ({ children }) => {
 
   // Calcular la cantidad de paneles
   const numberOfPanels = useMemo(() => {
-    if (!panelWatts || panelWatts === 0 || !filledConsumptions) return 0; // Si no hay Panel Watts o faltan meses, no calcular
-    return Math.ceil((systemSize * 1000) / panelWatts);
+    const panelWattsNum = Number(panelWatts) || 0;
+    if (!panelWattsNum || panelWattsNum === 0 || !filledConsumptions) return 0; // Si no hay Panel Watts o faltan meses, no calcular
+    return Math.ceil((systemSize * 1000) / panelWattsNum);
   }, [systemSize, panelWatts, filledConsumptions]);
 
   // Cantidad total de paneles (calculados + adicionales)
   const totalPanelsWithAdjustment = useMemo(() => {
-    return numberOfPanels + additionalPanels;
+    const additionalPanelsNum = Number(additionalPanels) || 0;
+    return numberOfPanels + additionalPanelsNum;
   }, [numberOfPanels, additionalPanels]);
 
   // Calcular el porcentaje de consumo que cubrirán los paneles
   const consumptionCoveragePercentage = useMemo(() => {
-    setTotalPanelsWatts(totalPanelsWithAdjustment * panelWatts);
-    setAnnualProduction(totalPanelsWatts * 4.5 * 365 / 1000);
-    setCoverage((annualProduction / totalConsumption));
-    if (!panelWatts || panelWatts === 0 || !filledConsumptions || totalConsumption === 0) return 0;
+    const panelWattsNum = Number(panelWatts) || 0;
     
+    if (!panelWattsNum || panelWattsNum === 0 || !filledConsumptions || totalConsumption === 0) {
+      setTotalPanelsWatts(0);
+      setAnnualProduction(0);
+      setCoverage(0);
+      return 0;
+    }
     
-    return Math.min(coverage, 100); // Máximo 100%
+    // Calcular la potencia total de los paneles en kW
+    const calculatedTotalPanelsWatts = totalPanelsWithAdjustment * panelWattsNum / 1000;
+    setTotalPanelsWatts(calculatedTotalPanelsWatts);
+    
+    // Calcular la producción anual estimada en kWh
+    // Factor de 4.5 horas de sol promedio por día
+    const calculatedAnnualProduction = calculatedTotalPanelsWatts * 4.5 * 365;
+    setAnnualProduction(calculatedAnnualProduction);
+    
+    // Calcular el porcentaje de cobertura
+    const calculatedCoverage = (calculatedTotalPanelsWatts / systemSize) * 100;
+    setCoverage(calculatedCoverage);
+    
+    return calculatedCoverage; // Permitir valores mayores a 100%
   }, [totalPanelsWithAdjustment, panelWatts, totalConsumption, filledConsumptions]);
+
+
 
   // Calcular el precio total del sistema aproximado
   const systemTotalPrice = useMemo(() => {
-    return systemSize > 0 ? systemSize * 1000 * 1.4 : 0;
-  }, [systemSize]);
+    return totalPanelsWatts > 0 ? totalPanelsWatts * 1000 * 1.4 : 0;
+  }, [totalPanelsWatts]);
 
   // Nuevo estado: multiplicador del precio del sistema
-  const [systemPriceMultiplier, setSystemPriceMultiplier] = useState(0); // mínimo -0.4
+  const [systemPriceMultiplier, setSystemPriceMultiplier] = useState(''); // mínimo -0.4
 
   // Precio ajustado según el multiplicador
   const systemTotalPriceAdjusted = useMemo(() => {
-    if (systemPriceMultiplier >= -0.3 && systemSize > 0) {
-      return systemSize * 1000 * (1.4 + systemPriceMultiplier);
+    const systemPriceMultiplierNum = Number(systemPriceMultiplier) || 0;
+    if (systemPriceMultiplierNum >= -0.3 && totalPanelsWatts > 0) {
+      return totalPanelsWatts * 1000 * (1.4 + systemPriceMultiplierNum);
     } else {
-      return systemSize * 1000 * 1.4;
+      return totalPanelsWatts * 1000 * 1.4;
     }
-  }, [systemSize, systemPriceMultiplier]);
+  }, [totalPanelsWatts, systemPriceMultiplier]);
 
   // Factores de crédito
   const [loanRateFactor, setLoanRateFactor] = useState('6.5'); // '6.5' o '10.5'
@@ -304,8 +324,8 @@ export const ConsumptionProvider = ({ children }) => {
 
   // Área total ocupada por los paneles calculados
   const totalPanelsArea = useMemo(() => {
-    return numberOfPanels * panelArea;
-  }, [numberOfPanels]);
+    return totalPanelsWithAdjustment * panelArea;
+  }, [totalPanelsWithAdjustment]);
 
   // Máximo de paneles que caben en el techo
   const maxPanelsByRoof = useMemo(() => {
