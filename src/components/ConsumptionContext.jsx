@@ -345,7 +345,7 @@ export const ConsumptionProvider = ({ children }) => {
   };
 
   // Área de un panel solar en m2
-  const panelArea = 2.6;
+  const panelArea = 2.45;
 
   // Nuevo estado: metros cuadrados del techo
   const [roofSquareMeters, setRoofSquareMeters] = useState(0);
