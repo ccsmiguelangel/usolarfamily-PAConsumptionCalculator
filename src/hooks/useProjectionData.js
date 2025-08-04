@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-export function useProjectionData(loanMonthlyPayment, averageMonthlyCost, growthRate, loanRateFactor, selectedPeriod = 150) {
+export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0, growthRate = 4, loanRateFactor = '6.5', selectedPeriod = 150, inflationRate = 4) {
   // Data for comparison chart based on selected period
   const comparisonProjectionData = useMemo(() => {
     if (loanMonthlyPayment <= 0 || averageMonthlyCost <= 0) return [];
@@ -10,8 +10,8 @@ export function useProjectionData(loanMonthlyPayment, averageMonthlyCost, growth
     return Array.from({ length: totalMonths }, (_, i) => {
       const month = i + 1;
       
-      // Naturgy/Ensa: monthly cost with annual inflation
-      const naturgyMonthlyCost = averageMonthlyCost * Math.pow(1 + (growthRate / 100), Math.floor(i / 12));
+      // Naturgy/Ensa: monthly cost with selected inflation rate
+      const naturgyMonthlyCost = averageMonthlyCost * Math.pow(1 + (inflationRate / 100), Math.floor(i / 12));
       
       // New projection: monthly credit payment (financing for the selected period)
       let newProjectionMonthlyCost = 0;
@@ -26,7 +26,7 @@ export function useProjectionData(loanMonthlyPayment, averageMonthlyCost, growth
         newProjection: newProjectionMonthlyCost
       };
     });
-  }, [loanMonthlyPayment, averageMonthlyCost, growthRate, selectedPeriod]);
+  }, [loanMonthlyPayment, averageMonthlyCost, inflationRate, selectedPeriod]);
 
   // Calculate total costs for the selected period
   const totalNaturgyEnsa = useMemo(() => {
@@ -34,11 +34,11 @@ export function useProjectionData(loanMonthlyPayment, averageMonthlyCost, growth
     
     let total = 0;
     for (let i = 0; i < selectedPeriod; i++) {
-      const naturgyMonthlyCost = averageMonthlyCost * Math.pow(1 + (growthRate / 100), Math.floor(i / 12));
+      const naturgyMonthlyCost = averageMonthlyCost * Math.pow(1 + (inflationRate / 100), Math.floor(i / 12));
       total += naturgyMonthlyCost;
     }
     return total;
-  }, [averageMonthlyCost, growthRate, selectedPeriod]);
+  }, [averageMonthlyCost, inflationRate, selectedPeriod]);
 
   const totalNewProjection = useMemo(() => {
     if (loanMonthlyPayment <= 0) return 0;
@@ -47,7 +47,7 @@ export function useProjectionData(loanMonthlyPayment, averageMonthlyCost, growth
 
   return {
     comparisonProjectionData,
-    totalNaturgyEnsa,
-    totalNewProjection,
+    totalNaturgyEnsa: totalNaturgyEnsa || 0,
+    totalNewProjection: totalNewProjection || 0,
   };
 } 

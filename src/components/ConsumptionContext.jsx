@@ -19,21 +19,21 @@ export function ConsumptionProvider({ children }) {
 
   // Hook for cost calculations
   const costCalculations = useCostCalculations(consumptions);
-  const { averageMonthlyCost, growthRate } = costCalculations;
+  const { averageMonthlyCost, growthRate, selectedRate } = costCalculations;
 
   // Hook for solar panel calculations
   const solarPanelCalculations = useSolarPanelCalculations(filledConsumptions, totalConsumption);
   const { calculatedTotalPanelsWatts } = solarPanelCalculations;
 
   // Hook for system pricing
-  const systemPricing = useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod);
+  const systemPricing = useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod, selectedRate);
   const { loanMonthlyPayment, loanRateFactor } = systemPricing;
 
   // Hook for consumption actions
   const consumptionActions = useConsumptionActions(consumptions, setConsumptions);
 
   // Hook for projection data
-  const projectionData = useProjectionData(loanMonthlyPayment, averageMonthlyCost, growthRate, loanRateFactor, selectedPeriod);
+  const projectionData = useProjectionData(loanMonthlyPayment, averageMonthlyCost, growthRate, loanRateFactor, selectedPeriod, selectedRate);
 
   return (
     <ConsumptionContext.Provider value={{
@@ -46,6 +46,9 @@ export function ConsumptionProvider({ children }) {
       ...projectionData,
       clientInfo, setClientInfo,
       selectedPeriod, setSelectedPeriod,
+      // Ensure these values are always available
+      totalNaturgyEnsa: projectionData?.totalNaturgyEnsa || 0,
+      totalNewProjection: projectionData?.totalNewProjection || 0,
     }}>
       {children}
     </ConsumptionContext.Provider>

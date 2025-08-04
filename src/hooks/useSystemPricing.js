@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 
-export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 150) {
+export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 150, inflationRate = 4) {
   const [systemPriceMultiplier, setSystemPriceMultiplier] = useState('');
   const [loanRateFactor, setLoanRateFactor] = useState('6.5');
 
@@ -25,9 +25,10 @@ export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 15
     }
   }, [calculatedTotalPanelsWatts, systemPriceMultiplier]);
 
-  // Credit factors based on selected period
+  // Credit factors based on selected period and adjusted for inflation
   const loanFactors = useMemo(() => {
-    const factors = {
+    // Base factors without inflation adjustment
+    const baseFactors = {
       12: {
         '6.5': 0.086066,
         '10.5': 0.088149
@@ -58,8 +59,19 @@ export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 15
       }
     };
     
-    return factors[selectedPeriod] || factors[150]; // Default to 150 months if period not found
-  }, [selectedPeriod]);
+    const baseFactor = baseFactors[selectedPeriod] || baseFactors[150];
+    
+    // Adjust factors based on inflation rate
+    // Higher inflation should increase the monthly payment to account for future value
+    const inflationAdjustment = 1 + (inflationRate / 100);
+    
+    const adjustedFactors = {};
+    Object.keys(baseFactor).forEach(rate => {
+      adjustedFactors[rate] = baseFactor[rate] * inflationAdjustment;
+    });
+    
+    return adjustedFactors;
+  }, [selectedPeriod, inflationRate]);
 
   // Monthly credit payment
   const loanMonthlyPayment = useMemo(() => {

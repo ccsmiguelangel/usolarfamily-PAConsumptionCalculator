@@ -1,19 +1,15 @@
 import { useConsumption } from './ConsumptionContext';
 import {
   Table,
-  Paper,
-  Title,
-  Grid,
   Text,
   NumberFormatter,
 } from '@mantine/core';
 
 const PaymentSummary = () => {
-  const { totalNaturgyEnsa150Months, totalNewProjectionSelectedPeriod, totalNaturgyEnsa } = useConsumption();
+  const { totalNaturgyEnsa, totalNewProjection } = useConsumption();
 
   return (
     <>
-      {/* <Title order={2} mb="md" c="blue.9">Resumen de Pagos en 25 años</Title> */}
       <Table.ScrollContainer type="native" minWidth={500} mt="xl" >
         <Table striped highlightOnHover withColumnBorders>
           <Table.Thead>
@@ -35,7 +31,7 @@ const PaymentSummary = () => {
               </Table.Td>
               <Table.Td>
                 <Text size="xl" c="green.4">
-                  <NumberFormatter thousandSeparator prefix="$ " value={(totalNaturgyEnsa - totalNewProjectionSelectedPeriod).toFixed(2)} />
+                <NumberFormatter thousandSeparator prefix="$ " value={(totalNaturgyEnsa - totalNewProjection).toFixed(2)} />
                 </Text>
               </Table.Td>
             </Table.Tr>
