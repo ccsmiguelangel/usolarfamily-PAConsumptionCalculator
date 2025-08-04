@@ -11,6 +11,7 @@ const ConsumptionContext = createContext();
 export function ConsumptionProvider({ children }) {
   // Additional states that are not in the hooks
   const [clientInfo, setClientInfo] = useState({});
+  const [selectedPeriod, setSelectedPeriod] = useState(150);
 
   // Hook for consumption data
   const consumptionData = useConsumptionData();
@@ -25,14 +26,14 @@ export function ConsumptionProvider({ children }) {
   const { calculatedTotalPanelsWatts } = solarPanelCalculations;
 
   // Hook for system pricing
-  const systemPricing = useSystemPricing(calculatedTotalPanelsWatts);
+  const systemPricing = useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod);
   const { loanMonthlyPayment, loanRateFactor } = systemPricing;
 
   // Hook for consumption actions
   const consumptionActions = useConsumptionActions(consumptions, setConsumptions);
 
   // Hook for projection data
-  const projectionData = useProjectionData(loanMonthlyPayment, averageMonthlyCost, growthRate, loanRateFactor);
+  const projectionData = useProjectionData(loanMonthlyPayment, averageMonthlyCost, growthRate, loanRateFactor, selectedPeriod);
 
   return (
     <ConsumptionContext.Provider value={{
@@ -44,6 +45,7 @@ export function ConsumptionProvider({ children }) {
       ...consumptionActions,
       ...projectionData,
       clientInfo, setClientInfo,
+      selectedPeriod, setSelectedPeriod,
     }}>
       {children}
     </ConsumptionContext.Provider>

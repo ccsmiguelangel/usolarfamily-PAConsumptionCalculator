@@ -35,21 +35,7 @@ const SolarPanelCalculator = () => {
           Cálculo de Paneles Solares
         </Title>
         <Grid gutter="md" align="end">
-          <Grid.Col span={{ base: 12, md: 6 }}>
-            <NumberInput
-              label="Ajuste de precio por watt del sistema"
-              description="Puedes aumentar o disminuir el precio por watt total del sistema. Ejemplo: 0.2"
-              placeholder="Ej: 0.2"
-              value={systemPriceMultiplier}
-              onChange={(value) => setSystemPriceMultiplier(Math.max(Number(value), -0.3))}
-              min={-0.3}
-              max={1}
-              step={0.01}
-              hideControls
-              rightSection="$"
-            />
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, md: 6 }}>
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <NumberInput
               label="Ingrese los Watts por Panel"
               description="200W - 1000W"
@@ -62,6 +48,20 @@ const SolarPanelCalculator = () => {
               allowDecimal={false}
               hideControls
               rightSection="W"
+            />
+          </Grid.Col>
+          <Grid.Col span={{ base: 12, md: 4 }}>
+            <NumberInput
+              label="Ajuste de precio por watt del sistema"
+              description="Puedes aumentar o disminuir el precio por watt total del sistema. Ejemplo: 0.2"
+              placeholder="Ej: 0.2"
+              value={systemPriceMultiplier}
+              onChange={(value) => setSystemPriceMultiplier(Math.max(Number(value), -0.3))}
+              min={-0.3}
+              max={1}
+              step={0.01}
+              hideControls
+              rightSection="$"
             />
           </Grid.Col>
           <Grid.Col span={{ base: 12, md: 6 }}>

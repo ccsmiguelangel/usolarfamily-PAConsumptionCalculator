@@ -9,7 +9,7 @@ import {
 } from '@mantine/core';
 
 const PaymentSummary = () => {
-  const { totalNaturgyEnsa150Months, totalNewProjection150Months } = useConsumption();
+  const { totalNaturgyEnsa150Months, totalNewProjectionSelectedPeriod, totalNaturgyEnsa } = useConsumption();
 
   return (
     <>
@@ -30,12 +30,12 @@ const PaymentSummary = () => {
             <Table.Tr>
               <Table.Td>
                 <Text size="xl" c="red.4">
-                  <NumberFormatter thousandSeparator prefix="$ " value={totalNaturgyEnsa150Months.toFixed(2)} />
+                  <NumberFormatter thousandSeparator prefix="$ " value={totalNaturgyEnsa.toFixed(2)} />
                 </Text>
               </Table.Td>
               <Table.Td>
                 <Text size="xl" c="green.4">
-                  <NumberFormatter thousandSeparator prefix="$ " value={(totalNaturgyEnsa150Months - totalNewProjection150Months).toFixed(2)} />
+                  <NumberFormatter thousandSeparator prefix="$ " value={(totalNaturgyEnsa - totalNewProjectionSelectedPeriod).toFixed(2)} />
                 </Text>
               </Table.Td>
             </Table.Tr>

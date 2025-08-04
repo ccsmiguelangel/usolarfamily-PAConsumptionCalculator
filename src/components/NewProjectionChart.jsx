@@ -10,20 +10,33 @@ import {
 } from '@mantine/core';
 import { AreaChart } from '@mantine/charts';
 import PaymentSummary from './PaymentSummary';
+
 const NewProjectionChart = () => {
   const {
     loanRateFactor, setLoanRateFactor,
     loanMonthlyPayment,
-    loanTotalPaid,
     comparisonProjectionData,
-    systemTotalPriceAdjusted
+    systemTotalPriceAdjusted,
+    totalNewProjectionSelectedPeriod,
+    selectedPeriod, setSelectedPeriod,
   } = useConsumption();
+
+  // Función para obtener el texto del período
+  const getPeriodText = (months) => {
+    if (months === 12) return '12 Meses (1 Año)';
+    if (months === 24) return '24 Meses (2 Años)';
+    if (months === 72) return '72 Meses (6 Años)';
+    if (months === 96) return '96 Meses (8 Años)';
+    if (months === 120) return '120 Meses (10 Años)';
+    if (months === 150) return '150 Meses (12.5 Años)';
+    return `${months} Meses`;
+  };
 
   return (
     <Grid.Col span={{ lg: 6, base: 12 }}>
       <Paper p="md" withBorder>
         <Title order={2} mb="md" c="blue.9">
-          Comparación a 150 Meses
+          Comparación a {getPeriodText(selectedPeriod)}
         </Title>
         <Group mb="md">
           <Select
@@ -33,6 +46,20 @@ const NewProjectionChart = () => {
             data={[
               { value: '6.5', label: 'Crédito 6.5%' },
               { value: '10.5', label: 'Crédito 10.5%' },
+            ]}
+            style={{ minWidth: 250 }}
+          />
+          <Select
+            label="Período de tiempo"
+            value={selectedPeriod.toString()}
+            onChange={(value) => setSelectedPeriod(parseInt(value))}
+            data={[
+              { value: '150', label: '150 Meses (12.5 Años)' },
+              { value: '120', label: '120 Meses (10 Años)' },
+              { value: '96', label: '96 Meses (8 Años)' },
+              { value: '72', label: '72 Meses (6 Años)' },
+              { value: '24', label: '24 Meses (2 Años)' },
+              { value: '12', label: '12 Meses (1 Año)' },
             ]}
             style={{ minWidth: 250 }}
           />
@@ -53,6 +80,15 @@ const NewProjectionChart = () => {
             <NumberFormatter thousandSeparator prefix="$ " value={loanMonthlyPayment.toFixed(2)} />
           </Text>
         </Group>
+        <Group>
+          <Text size="md">
+            <b>Pago total con sistema:</b>
+          </Text>
+          <Text>
+            <NumberFormatter thousandSeparator prefix="$ " value={totalNewProjectionSelectedPeriod.toFixed(2)} />
+          </Text>
+        </Group>
+        
         {/* <Group>
           <Text size="md">
             <b>Total pagado en 12.5 años:</b>
