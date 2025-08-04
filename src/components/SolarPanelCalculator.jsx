@@ -29,7 +29,7 @@ const SolarPanelCalculator = () => {
 
   return (
   <>
-    <Grid.Col span={{ lg: 6, base: 12 }}>
+    <Grid.Col span={{ lg: 7, base: 12 }}>
       <Paper p="md" withBorder>
         <Title order={2} mb="md" c="blue.9">
           Cálculo de Paneles Solares

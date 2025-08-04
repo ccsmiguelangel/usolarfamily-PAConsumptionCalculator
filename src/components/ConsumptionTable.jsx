@@ -27,9 +27,6 @@ const ConsumptionTable = () => {
         <RoofPanelCalculator />
         <NaturgyProjectionChart />
         <NewProjectionChart />
-        {/* {(totalNaturgyEnsa > 0 || totalNewProjection > 0) && (
-         <PaymentSummary />
-        )} */}
         <ClientInfoForm />
       </Grid>
     </Container>

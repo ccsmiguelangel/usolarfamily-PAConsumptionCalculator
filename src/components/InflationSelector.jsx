@@ -12,8 +12,8 @@ const InflationSelector = () => {
       <Grid.Col span={4}>
         <Select
           label="Escenario de inflación"
-          value={selectedRate}
-          onChange={setSelectedRate}
+          value={selectedRate.toString()}
+          onChange={(value) => setSelectedRate(Number(value))}
           data={[
             { value: '2', label: 'Inflación PA 2%' },
             { value: '3', label: 'Inflación PA 3%' },
@@ -21,7 +21,7 @@ const InflationSelector = () => {
             { value: '5', label: 'Inflación PA 5%' },
             { value: '6', label: 'Inflación PA 6%' }
           ]}
-          defaultValue={[{ value: '4', label: 'Inflación PA 4%' }]}
+          defaultValue="4"
           leftSection={<IconChartLine size={18} />}
         />
       </Grid.Col>

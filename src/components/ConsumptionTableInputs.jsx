@@ -28,7 +28,7 @@ const ConsumptionTableInputs = () => {
   return(
   <>
     <Grid.Col span={12}>
-      <Paper p="md"b withBorder>
+      <Paper p="md" withBorder>
         <Grid justify="space-between" align="center">
           <Grid.Col span="auto">
             <Title order={1} c="blue.9" display={{lg: 'block', base: 'none'}}>
@@ -63,7 +63,7 @@ const ConsumptionTableInputs = () => {
                   rightSection="kWh"
                   rightSectionWidth={50}
                   placeholder="Ingrese consumo"
-                  fullWidth
+                  decimalScale={0}
                 />
               </Grid.Col>
               <Grid.Col span={6}>
@@ -75,7 +75,7 @@ const ConsumptionTableInputs = () => {
                   hideControls
                   leftSection="$"
                   placeholder="Ingrese costo"
-                  fullWidth
+                  decimalScale={2}
                 />
               </Grid.Col>
               <Grid.Col span={{ base: 12, md: 6 }}>
@@ -112,7 +112,6 @@ const ConsumptionTableInputs = () => {
             {consumptions.map((row) => (
               <Table.Tr key={row.id}>
                 <Table.Td>{row.month}</Table.Td>
-                
                 <Table.Td>
                   <NumberInput
                     value={row.consumption}
@@ -121,7 +120,7 @@ const ConsumptionTableInputs = () => {
                     rightSectionWidth={50}
                     hideControls
                     placeholder="Ingrese consumo"
-                    allowDecimal={false}
+                    decimalScale={0}
                   />
                 </Table.Td>
                 <Table.Td>
@@ -130,19 +129,17 @@ const ConsumptionTableInputs = () => {
                       value={row.cost}
                       onChange={(e) => handleInputChange(row.id, 'cost', Number(e))}
                       placeholder="Ingrese costo mensual"
-                      allowDecimal={true}
+                      decimalScale={2}
                       leftSection="$"
                       hideControls 
-                      type="number"
                     />
                   ) : (
                     <NumberInput
                       value={Number(row.cost).toFixed(2)}
                       disabled
-                      allowDecimal={true}
+                      decimalScale={2}
                       leftSection="$"
                       hideControls 
-                      type="number"
                     />
                   )}
                 </Table.Td>

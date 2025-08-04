@@ -23,7 +23,7 @@ const NewProjectionChart = () => {
     <Grid.Col span={{ lg: 6, base: 12 }}>
       <Paper p="md" withBorder>
         <Title order={2} mb="md" c="blue.9">
-          Comparación a 25 Años
+          Comparación a 150 Meses
         </Title>
         <Group mb="md">
           <Select
@@ -65,7 +65,7 @@ const NewProjectionChart = () => {
           <AreaChart
             h={400}
             data={comparisonProjectionData}
-            dataKey="year"
+            dataKey="month"
             type="linear"
             curveType="linear"
             connectNulls
@@ -90,7 +90,7 @@ const NewProjectionChart = () => {
               tickFormatter: (value) => `$${value.toFixed(0)}`
             }}
             xAxisProps={{
-              tickFormatter: (value) => `Año ${value}`
+              tickFormatter: (value) => `Mes ${value}`
             }}
             tooltipProps={{
               content: ({ label, payload }) => {
@@ -114,7 +114,7 @@ const NewProjectionChart = () => {
                       marginBottom: '8px',
                       fontSize: '14px'
                     }}>
-                      Año {label}
+                      Mes {label}
                     </div>
                     {uniquePayload?.map((item, index) => (
                       <div key={index} style={{

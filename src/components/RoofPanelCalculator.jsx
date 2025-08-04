@@ -14,7 +14,7 @@ const RoofPanelCalculator = () => {
   } = useConsumption();
 
   return (
-    <Grid.Col span={{ lg: 6, base: 12 }}>
+    <Grid.Col span={{ lg: 5, base: 12 }}>
       <Paper p="md" withBorder>
         <Title order={2} mb="md" c="blue.9">
           Cálculo de Paneles en el Techo
