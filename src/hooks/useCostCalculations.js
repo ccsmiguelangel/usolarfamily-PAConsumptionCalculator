@@ -4,6 +4,7 @@ export function useCostCalculations(consumptions) {
   const [selectedRate, setSelectedRate] = useState(4);
   const [averageCost, setAverageCost] = useState(0);
   const [initialPrice, setInitialPrice] = useState(0);
+  const [inflationRate, setInflationRate] = useState(4);
   const [growthRate, setGrowthRate] = useState(4);
 
   // Calculate average monthly costs
@@ -57,17 +58,17 @@ export function useCostCalculations(consumptions) {
     if (averageMonthlyCost <= 0) return 0;
     let total = 0;
     for (let i = 0; i < 300; i++) {
-      const monthlyCost = averageMonthlyCost * Math.pow(1 + (growthRate / 100), Math.floor(i / 12));
+      const monthlyCost = averageMonthlyCost * Math.pow(1 + (inflationRate / 100), Math.floor(i / 12));
       total += monthlyCost;
     }
     return total;
-  }, [averageMonthlyCost, growthRate]);
+  }, [averageMonthlyCost, inflationRate]);
 
   return {
     selectedRate, setSelectedRate,
     averageCost, setAverageCost,
     initialPrice, setInitialPrice,
-    growthRate, setGrowthRate,
+    inflationRate, setInflationRate,
     averageMonthlyCost,
     projectionData,
     chartData,

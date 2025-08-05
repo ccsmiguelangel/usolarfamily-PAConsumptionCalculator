@@ -6,14 +6,14 @@ import {
 import { IconChartLine } from '@tabler/icons-react';
 
 const InflationSelector = () => {
-  const { selectedRate, setSelectedRate } = useConsumption();
+  const { inflationRate, setInflationRate } = useConsumption();
   return(
     <>
       <Grid.Col span={4}>
         <Select
           label="Escenario de inflación"
-          value={selectedRate.toString()}
-          onChange={(value) => setSelectedRate(Number(value))}
+          value={inflationRate.toString()}
+          onChange={(value) => setInflationRate(Number(value))}
           data={[
             { value: '2', label: 'Inflación PA 2%' },
             { value: '3', label: 'Inflación PA 3%' },

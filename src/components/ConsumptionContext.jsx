@@ -20,7 +20,7 @@ export function ConsumptionProvider({ children }) {
 
   // Hook for cost calculations
   const costCalculations = useCostCalculations(consumptions);
-  const { averageMonthlyCost, growthRate, selectedRate } = costCalculations;
+  const { averageMonthlyCost, growthRate, selectedRate, inflationRate } = costCalculations;
 
   // Hook for solar panel calculations
   const solarPanelCalculations = useSolarPanelCalculations(filledConsumptions, totalConsumption);
@@ -34,7 +34,7 @@ export function ConsumptionProvider({ children }) {
   const consumptionActions = useConsumptionActions(consumptions, setConsumptions);
 
   // Hook for projection data
-  const projectionData = useProjectionData(loanMonthlyPayment, averageMonthlyCost, growthRate, loanRateFactor, selectedPeriod, selectedRate);
+  const projectionData = useProjectionData(loanMonthlyPayment, averageMonthlyCost, growthRate, loanRateFactor, selectedPeriod, inflationRate);
 
   return (
     <ConsumptionContext.Provider value={{
