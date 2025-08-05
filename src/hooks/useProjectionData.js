@@ -1,11 +1,12 @@
 import { useMemo } from 'react';
 
 export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0, growthRate = 4, loanRateFactor = '6.5', selectedPeriod = 150, inflationRate = 4) {
-  // Data for comparison chart based on selected period
+  // Data for comparison chart - always 25 years (300 months) regardless of selected period
   const comparisonProjectionData = useMemo(() => {
     if (loanMonthlyPayment <= 0 || averageMonthlyCost <= 0) return [];
     
-    const totalMonths = selectedPeriod;
+    // Always show 25 years (300 months) in the chart
+    const totalMonths = 300;
     
     return Array.from({ length: totalMonths }, (_, i) => {
       const month = i + 1;
@@ -19,6 +20,7 @@ export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0
         // Full payment until the selected period
         newProjectionMonthlyCost = loanMonthlyPayment;
       }
+      // After selected period, no more payments (system is paid off)
       
       return {
         month: month,
@@ -28,7 +30,7 @@ export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0
     });
   }, [loanMonthlyPayment, averageMonthlyCost, inflationRate, selectedPeriod]);
 
-  // Calculate total costs for the selected period
+  // Calculate total costs for the selected period (for summary calculations)
   const totalNaturgyEnsa = useMemo(() => {
     if (averageMonthlyCost <= 0) return 0;
     

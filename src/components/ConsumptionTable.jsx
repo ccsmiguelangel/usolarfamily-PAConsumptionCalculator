@@ -29,8 +29,8 @@ const ConsumptionTable = () => {
         <ConsumptionTableInputs />
         <SolarPanelCalculator />
         <RoofPanelCalculator />
-        <NaturgyProjectionChart />
         <NewProjectionChart />
+        <NaturgyProjectionChart />
         <ClientInfoForm />
       </Grid>
     </Container>

@@ -53,10 +53,10 @@ export function useCostCalculations(consumptions) {
   }, [projectionData]);
 
   // Totals for 150 months
-  const totalNaturgyEnsa150Months = useMemo(() => {
+  const totalNaturgyEnsa300Months = useMemo(() => {
     if (averageMonthlyCost <= 0) return 0;
     let total = 0;
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < 300; i++) {
       const monthlyCost = averageMonthlyCost * Math.pow(1 + (growthRate / 100), Math.floor(i / 12));
       total += monthlyCost;
     }
@@ -73,6 +73,6 @@ export function useCostCalculations(consumptions) {
     chartData,
     totalNaturgyEnsa,
     totalNewProjection,
-    totalNaturgyEnsa150Months,
+    totalNaturgyEnsa300Months,
   };
 } 

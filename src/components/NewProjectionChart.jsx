@@ -36,7 +36,7 @@ const NewProjectionChart = () => {
     <Grid.Col span={{ lg: 6, base: 12 }}>
       <Paper p="md" withBorder>
         <Title order={2} mb="md" c="blue.9">
-          Comparación a {getPeriodText(selectedPeriod)}
+          Comparación a 25 Años
         </Title>
         <Group mb="md">
           <Select
