@@ -12,6 +12,7 @@ export function ConsumptionProvider({ children }) {
   // Additional states that are not in the hooks
   const [clientInfo, setClientInfo] = useState({});
   const [selectedPeriod, setSelectedPeriod] = useState(150);
+  const [loanRateFactor, setLoanRateFactor] = useState('6.5');
 
   // Hook for consumption data
   const consumptionData = useConsumptionData();
@@ -26,8 +27,8 @@ export function ConsumptionProvider({ children }) {
   const { calculatedTotalPanelsWatts } = solarPanelCalculations;
 
   // Hook for system pricing
-  const systemPricing = useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod, selectedRate);
-  const { loanMonthlyPayment, loanRateFactor } = systemPricing;
+  const systemPricing = useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod, loanRateFactor, selectedRate);
+  const { loanMonthlyPayment } = systemPricing;
 
   // Hook for consumption actions
   const consumptionActions = useConsumptionActions(consumptions, setConsumptions);
@@ -46,6 +47,7 @@ export function ConsumptionProvider({ children }) {
       ...projectionData,
       clientInfo, setClientInfo,
       selectedPeriod, setSelectedPeriod,
+      loanRateFactor, setLoanRateFactor,
       // Ensure these values are always available
       totalNaturgyEnsa: projectionData?.totalNaturgyEnsa || 0,
       totalNewProjection: projectionData?.totalNewProjection || 0,

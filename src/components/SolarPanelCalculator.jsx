@@ -56,8 +56,8 @@ const SolarPanelCalculator = () => {
               description="Puedes aumentar o disminuir el precio por watt total del sistema. Ejemplo: 0.2"
               placeholder="Ej: 0.2"
               value={systemPriceMultiplier}
-              onChange={(value) => setSystemPriceMultiplier(Math.max(Number(value), -0.3))}
-              min={-0.3}
+              onChange={(value) => setSystemPriceMultiplier(Math.max(Number(value), -0.2))}
+              min={-0.2}
               max={1}
               step={0.01}
               hideControls

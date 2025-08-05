@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
 
-export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 150, inflationRate = 4) {
+export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 150, loanRateFactor = '6.5', inflationRate = 4) {
   const [systemPriceMultiplier, setSystemPriceMultiplier] = useState('');
-  const [loanRateFactor, setLoanRateFactor] = useState('6.5');
 
   // Calculate approximate total system price
   const defaultPricePerWatt = 1.1;
@@ -10,10 +9,6 @@ export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 15
   const systemTotalPrice = useMemo(() => {
     return calculatedTotalPanelsWatts > 0 ? calculatedTotalPanelsWatts * 1000 * defaultPricePerWatt : 0;
   }, [calculatedTotalPanelsWatts]);
-
-  const systemTotalPriceWithNewTax = useMemo(() => {
-    return systemTotalPrice * 1.1 / 0.78;
-  }, [systemTotalPrice]);
 
   // Price adjusted according to multiplier
   const systemTotalPriceAdjusted = useMemo(() => {
@@ -25,62 +20,64 @@ export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 15
     }
   }, [calculatedTotalPanelsWatts, systemPriceMultiplier]);
 
-  // Credit factors based on selected period and adjusted for inflation
-  const loanFactors = useMemo(() => {
-    // Base factors without inflation adjustment
-    const baseFactors = {
-      12: {
-        '6.5': 0.086066,
-        '10.5': 0.088149
-      },
-      24: {
-        '6.5': 0.044546,
-        '10.5': 0.046376
-      },
-      48: {
-        '6.5': 0.023715,
-        '10.5': 0.025603
-      },
-      72: {
-        '6.5': 0.01681,
-        '10.5': 0.018779
-      },
-      96: {
-        '6.5': 0.013386,
-        '10.5': 0.01544
-      },
-      120: {
-        '6.5': 0.011355,
-        '10.5': 0.013493
-      },
-      150: {
-        '6.5': 0.009755,
-        '10.5': 0.011998
-      }
+  const systemTotalPriceWithNewTax = useMemo(() => {
+    return systemTotalPriceAdjusted / 0.78;
+  }, [systemTotalPriceAdjusted]);
+
+  // Calculate loan factor for specific credit percentage and months
+  const loanFactor = useMemo(() => {
+    // Function to calculate loan factor dynamically
+    const calculateLoanFactor = (annualRate, months) => {
+      const monthlyRate = annualRate / 100 / 12;
+      if (monthlyRate === 0) return 1 / months;
+      
+      const factor = (monthlyRate * Math.pow(1 + monthlyRate, months)) / 
+                    (Math.pow(1 + monthlyRate, months) - 1);
+      return factor;
+    };
+
+    // Predefined factors for specific combinations
+    const predefinedFactors = {
+      '12-6.5': 0.086066,
+      '12-10.5': 0.088149,
+      '24-6.5': 0.044546,
+      '24-10.5': 0.046376,
+      '48-6.5': 0.023715,
+      '48-10.5': 0.025603,
+      '72-6.5': 0.01681,
+      '72-10.5': 0.018779,
+      '96-6.5': 0.013386,
+      '96-10.5': 0.01544,
+      '120-6.5': 0.011355,
+      '120-10.5': 0.013493,
+      '150-6.5': 0.009755,
+      '150-10.5': 0.011998
     };
     
-    const baseFactor = baseFactors[selectedPeriod] || baseFactors[150];
+    // Create key for the specific combination
+    const factorKey = `${selectedPeriod}-${loanRateFactor}`;
     
-    // Adjust factors based on inflation rate
-    // Higher inflation should increase the monthly payment to account for future value
-    const inflationAdjustment = 1 + (inflationRate / 100);
+    // Use predefined factor if available, otherwise calculate dynamically
+    let baseFactor;
+    if (predefinedFactors[factorKey]) {
+      baseFactor = predefinedFactors[factorKey];
+    } else {
+      // Calculate factor dynamically for the specific combination
+      baseFactor = calculateLoanFactor(parseFloat(loanRateFactor), selectedPeriod);
+    }
     
-    const adjustedFactors = {};
-    Object.keys(baseFactor).forEach(rate => {
-      adjustedFactors[rate] = baseFactor[rate] * inflationAdjustment;
-    });
-    
-    return adjustedFactors;
-  }, [selectedPeriod, inflationRate]);
+    // Return the base factor without inflation adjustment
+    return baseFactor;
+  }, [selectedPeriod, loanRateFactor, inflationRate]);
 
   // Monthly credit payment
   const loanMonthlyPayment = useMemo(() => {
-    return systemTotalPriceAdjusted * loanFactors[loanRateFactor];
-  }, [systemTotalPriceAdjusted, loanRateFactor, loanFactors]);
+    return systemTotalPriceWithNewTax * loanFactor;
+  }, [systemTotalPriceWithNewTax, loanFactor]);
 
   // Total paid in credit
   const loanTotalPaid = useMemo(() => {
-    return loanMonthlyPayment * selectedPeriod / 0.78;
+    return loanMonthlyPayment * selectedPeriod;
   }, [loanMonthlyPayment, selectedPeriod]);
 
   // Total of new projection at selected period
@@ -90,7 +87,7 @@ export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 15
 
   return {
     systemPriceMultiplier, setSystemPriceMultiplier,
-    loanRateFactor, setLoanRateFactor,
+    loanRateFactor,
     systemTotalPrice,
     systemTotalPriceWithNewTax,
     systemTotalPriceAdjusted,

@@ -80,23 +80,7 @@ const NewProjectionChart = () => {
             <NumberFormatter thousandSeparator prefix="$ " value={loanMonthlyPayment.toFixed(2)} />
           </Text>
         </Group>
-        <Group>
-          <Text size="md">
-            <b>Pago total con sistema:</b>
-          </Text>
-          <Text>
-            <NumberFormatter thousandSeparator prefix="$ " value={totalNewProjectionSelectedPeriod.toFixed(2)} />
-          </Text>
-        </Group>
-        
-        {/* <Group>
-          <Text size="md">
-            <b>Total pagado en 12.5 años:</b>
-          </Text>
-          <Text>
-            <NumberFormatter thousandSeparator prefix="$ " value={loanTotalPaid.toFixed(2)} />
-          </Text>
-        </Group> */}
+
         <div style={{ width: '100%', marginTop: '2rem' }}>
           <AreaChart
             h={400}
