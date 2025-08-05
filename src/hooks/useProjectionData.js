@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0, growthRate = 4, loanRateFactor = '6.5', selectedPeriod = 150, inflationRate = 4) {
+export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0, growthRate = 3, loanRateFactor = '6.5', selectedPeriod = 150, inflationRate = 3) {
   // Data for comparison chart - always 25 years (300 months) regardless of selected period
   const comparisonProjectionData = useMemo(() => {
     if (loanMonthlyPayment <= 0 || averageMonthlyCost <= 0) return [];

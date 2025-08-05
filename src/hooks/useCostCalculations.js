@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
 
 export function useCostCalculations(consumptions) {
-  const [selectedRate, setSelectedRate] = useState(4);
+  const [selectedRate, setSelectedRate] = useState(3);
   const [averageCost, setAverageCost] = useState(0);
   const [initialPrice, setInitialPrice] = useState(0);
-  const [inflationRate, setInflationRate] = useState(4);
+  const [inflationRate, setInflationRate] = useState(3);
   const [growthRate, setGrowthRate] = useState(4);
 
   // Calculate average monthly costs
@@ -53,7 +53,7 @@ export function useCostCalculations(consumptions) {
     return projectionData.reduce((acc, curr) => acc + curr.value, 0);
   }, [projectionData]);
 
-  // Totals for 150 months
+  // Totals for 300 months
   const totalNaturgyEnsa300Months = useMemo(() => {
     if (averageMonthlyCost <= 0) return 0;
     let total = 0;
