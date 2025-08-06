@@ -5,7 +5,7 @@ export function useCostCalculations(consumptions) {
   const [averageCost, setAverageCost] = useState(0);
   const [initialPrice, setInitialPrice] = useState(0);
   const [inflationRate, setInflationRate] = useState(3);
-  const [growthRate, setGrowthRate] = useState(4);
+  const [growthRate, setGrowthRate] = useState(3);
 
   // Calculate average monthly costs
   const averageMonthlyCost = useMemo(() => {
