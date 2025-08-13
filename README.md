@@ -1,131 +1,172 @@
-# Calculadora Solar de Energía - Panamá
+# Solar Calculator - Energy Calculation System
 
-Una aplicación web moderna para calcular la viabilidad de instalación de paneles solares residenciales en Panamá, con proyecciones financieras a 25 años y comparaciones de costos.
+## 🎯 General Description
 
-## 🚀 Características
+Solar panel calculation system that allows users to estimate costs, savings, and financial projections over 25 years for residential solar energy systems.
 
-- **Cálculo de Consumo Mensual**: Ingreso y gestión de consumo eléctrico por mes
-- **Proyecciones Financieras**: Análisis de costos a 25 años con tasas de inflación
-- **Calculadora de Paneles Solares**: Dimensionamiento del sistema solar según consumo
-- **Análisis de Techo**: Cálculo del espacio disponible para instalación
-- **Comparación de Costos**: Proyección Naturgy/Ensa vs. Sistema Solar
-- **Resumen de Pagos**: Cálculo de cuotas mensuales y financiamiento
-- **Formulario de Cliente**: Captura de información del cliente para propuestas
+## 🏗️ System Architecture
 
-## 🛠️ Tecnologías Utilizadas
-
-- **Frontend**: React 18 + Vite
-- **UI Framework**: Mantine v7
-- **Gráficos**: Chart.js, Recharts
-- **Estilos**: CSS Modules, PostCSS
-- **Backend**: Express.js (servidor de correo)
-- **Email**: Nodemailer
-
-## 📁 Estructura del Proyecto
-
+### Folder Structure
 ```
 src/
-├── components/          # Componentes de la interfaz
-│   ├── ConsumptionTable.jsx      # Tabla principal de consumo
-│   ├── SolarPanelCalculator.jsx  # Calculadora de paneles
-│   ├── RoofPanelCalculator.jsx   # Calculadora de espacio en techo
-│   ├── PaymentSummary.jsx        # Resumen de pagos
-│   ├── ClientInfoForm.jsx        # Formulario de cliente
-│   └── ...                       # Otros componentes
-├── hooks/               # Hooks personalizados
-│   ├── useConsumptionData.js     # Gestión de datos de consumo
-│   ├── useCostCalculations.js    # Cálculos de costos
-│   ├── useSolarPanelCalculations.js # Cálculos de paneles
-│   ├── useSystemPricing.js       # Precios del sistema
-│   └── ...                       # Otros hooks
-└── assets/              # Recursos estáticos
+├── components/          # Main React components
+├── hooks/              # Custom hooks for business logic
+└── assets/             # Static resources
 ```
 
-## 🚀 Instalación y Uso
-
-### Prerrequisitos
-- Node.js 18+ 
-- npm o yarn
-
-### Instalación
-```bash
-# Clonar el repositorio
-git clone [URL_DEL_REPOSITORIO]
-cd 2025PASolarCalculator
-
-# Instalar dependencias
-npm install
-
-# Ejecutar en modo desarrollo
-npm run dev
-
-# Construir para producción
-npm run build
-
-# Ejecutar servidor de correo
-npm run server
+### Main Data Flow
+```
+ConsumptionContext (Global State)
+    ↓
+Specialized Hooks
+    ↓
+UI Components
 ```
 
-## 📊 Funcionalidades Principales
+## 🔑 Key Architecture Decisions
 
-### 1. Gestión de Consumo
-- Ingreso de consumo mensual (kWh)
-- Cálculo automático de promedios
-- Rellenado rápido de meses faltantes
+### 1. Separation of Responsibilities
+- **ConsumptionContext**: Global state and coordination between hooks
+- **Hooks**: Specific business logic (calculations, projections, pricing)
+- **Components**: Only presentation and user interaction
 
-### 2. Cálculos Solares
-- Dimensionamiento del sistema según consumo
-- Cálculo de número de paneles necesarios
-- Estimación de producción anual
-- Análisis de cobertura del sistema
+### 2. State Management with Try-Catch
+- Implemented robust error handling in the main context
+- Default values for all variables in case of failure
+- Prevention of application crashes
 
-### 3. Análisis Financiero
-- Proyección de costos a 25 años
-- Comparación con tarifas actuales
-- Cálculo de ahorros potenciales
-- Opciones de financiamiento
+### 3. Dual Financial Calculations
+- **System price**: Always without taxes (transparency for the client)
+- **Monthly payments**: With taxes (precise financial calculations)
+- **Charts**: Aligned with displayed monthly payments
 
-### 4. Generación de Propuestas
-- Formulario de información del cliente
-- Envío de propuestas por correo
-- Cálculos personalizados
+## 📊 Pricing System
 
-## 🔧 Configuración
-
-### Variables de Entorno
-Crear archivo `.env` en la raíz del proyecto:
-```env
-EMAIL_USER=tu_email@gmail.com
-EMAIL_PASS=tu_password_de_aplicacion
+### Price Structure
+```
+systemTotalPrice (without taxes)
+    ↓
+systemTotalPriceWithNewTax (with taxes)
+    ↓
+loanMonthlyPayment (monthly payment with taxes)
 ```
 
-### Configuración del Servidor de Correo
-El servidor Express está configurado para enviar propuestas por correo usando Nodemailer.
+### Key Variables
+- `systemTotalPrice`: Base system price
+- `systemTotalPriceAdjusted`: Price adjusted by multiplier
+- `systemTotalPriceWithNewTax`: Price with taxes (for financial calculations)
+- `batteryPrice`: Battery price (when active)
 
-## 📈 Uso de la Aplicación
+## 🔋 Battery System
 
-1. **Ingresar Consumo**: Completar la tabla de consumo mensual
-2. **Configurar Parámetros**: Ajustar tasas de inflación y crecimiento
-3. **Revisar Cálculos**: Ver proyecciones y comparaciones
-4. **Generar Propuesta**: Completar formulario del cliente
-5. **Enviar Propuesta**: Generar y enviar propuesta por correo
+### Activation Logic
+- `wantsBattery`: Toggle to activate/deactivate battery
+- `batteryPrice`: Selected battery price
+- Automatic calculations of total prices with and without battery
 
-## 🤝 Contribución
+### Chart Behavior
+- **Without battery**: Uses `projectionData` (payments without battery)
+- **With battery**: Uses `projectionDataWithBattery` (payments with battery)
+- `comparisonProjectionData` changes dynamically based on state
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
+## 📈 Financial Projections
 
-## 📝 Licencia
+### Analysis Period
+- **Always 25 years (300 months)** for Naturgy/Ensa
+- **Variable credit period** for solar system payments
+- **Independence**: Naturgy/Ensa spending doesn't depend on credit period
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+### Total Calculations
+```javascript
+// Naturgy/Ensa: Always 300 months
+totalNaturgyEnsa = sum(300 months with inflation)
 
-## 📞 Contacto
+// Solar System: Credit period
+totalNewProjection = loanMonthlyPayment × selectedPeriod
+```
 
-Para consultas sobre el proyecto o soporte técnico, contactar al equipo de desarrollo.
+## 🎛️ Inflation Selector
+
+### Inflation Rate
+- **Variable**: `inflationRate` (not `selectedRate`)
+- **Range**: 2% to 6% annually
+- **Affects**: Naturgy/Ensa chart and total spent
+- **Doesn't affect**: Solar system payments (fixed credit rate)
+
+### Implementation
+```javascript
+// ✅ CORRECT - Use inflationRate
+projectionData = useProjectionData(..., inflationRate, ...)
+
+// ❌ INCORRECT - Don't use selectedRate
+projectionData = useProjectionData(..., selectedRate, ...)
+```
+
+## 🚨 Common Errors to Avoid
+
+### 1. Variable References
+```javascript
+// ❌ INCORRECT - Undefined variable
+comparisonProjectionData: wantsBattery ? ... : ...
+
+// ✅ CORRECT - Use complete object
+comparisonProjectionData: batterySystem?.wantsBattery ? ... : ...
+```
+
+### 2. Variable Duplication
+```javascript
+// ❌ INCORRECT - Duplicate variables already included in spread
+...systemPricing,
+loanMonthlyPayment: loanMonthlyPayment,  // Already included in systemPricing
+
+// ✅ CORRECT - Only use spread
+...systemPricing
+```
+
+### 3. Inflation Rate Usage
+```javascript
+// ❌ INCORRECT - Use selectedRate for projections
+useProjectionData(..., selectedRate, ...)
+
+// ✅ CORRECT - Use inflationRate for projections
+useProjectionData(..., inflationRate, ...)
+```
+
+## 🔧 Maintenance and Debugging
+
+### State Verification
+1. Check that `ConsumptionContext` has try-catch
+2. Verify that all hooks have default values
+3. Confirm that `comparisonProjectionData` uses correct conditional logic
+
+### Functionality Testing
+1. Activate/deactivate battery
+2. Change credit period
+3. Modify inflation rate
+4. Verify consistency between chart and displayed values
+
+## 📝 Implementation Notes
+
+### Critical Hooks
+- `useSystemPricing`: Price and monthly payment calculations
+- `useProjectionData`: 25-year projections
+- `useBatterySystem`: Battery system management
+
+### Key Components
+- `NewProjectionChart`: Main chart and monthly payment
+- `PaymentSummary`: Savings summary
+- `SolarPanelCalculator`: System configuration
+
+## 🎉 Benefits of this Architecture
+
+1. **Maintainability**: Separated and well-documented logic
+2. **Robustness**: Error handling and default values
+3. **Consistency**: Synchronized data between components
+4. **Flexibility**: Easy modification of rates and periods
+5. **Transparency**: Prices without taxes for the client
 
 ---
 
-**Desarrollado para United Solar Family Panamá** 🌞
+**Last updated**: December 2024  
+**Developed by**: AI Assistant  
+**Version**: 1.0.0
