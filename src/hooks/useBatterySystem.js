@@ -5,10 +5,18 @@ export function useBatterySystem(systemSize) {
   const BATTERY_CONFIG = {
     baseCapacity: 10, // Capacidad base en kW
     capacityIncrement: 5, // Incremento por paso en kW
-    basePrice: 12500, // Precio base en USD
-    priceIncrement: 8000, // Incremento de precio por paso en USD
     minCapacity: 10, // Capacidad mínima
-    maxCapacity: 100, // Capacidad máxima (ajustable)
+    maxCapacity: 40, // Capacidad máxima ajustada a 40kW
+    // Precios específicos por capacidad en USD
+    capacityPrices: {
+      10: 6999,   // 10kW - $6,999
+      15: 9699,   // 15kW - $9,699
+      20: 12599,  // 20kW - $12,599
+      25: 15399,  // 25kW - $15,999 (precio razonable intermedio)
+      30: 19399,  // 30kW - $18,999 (precio razonable intermedio)
+      35: 21999,  // 35kW - $21,999 (precio razonable intermedio)
+      40: 25199   // 40kW - $25,199 (como dos de 20kW)
+    }
   };
 
   const [wantsBattery, setWantsBattery] = useState(false);
@@ -16,17 +24,30 @@ export function useBatterySystem(systemSize) {
 
   // Calcular batería sugerida automáticamente según el tamaño del sistema
   const suggestedCapacity = useMemo(() => {
-    if (systemSize <= 3.0) return 10;
-    if (systemSize <= 6.0) return 15;
-    return 20;
+    if (!systemSize || systemSize <= 0) return 10;
+    
+    // Cada 3kW de sistema solar = 5kW de batería sugerida
+    const suggestedBatterySize = Math.ceil(systemSize / 3) * 5;
+    
+    // Asegurar que esté dentro del rango válido (10kW - 40kW)
+    if (suggestedBatterySize < BATTERY_CONFIG.minCapacity) {
+      return BATTERY_CONFIG.minCapacity; // 10kW mínimo
+    }
+    
+    if (suggestedBatterySize > BATTERY_CONFIG.maxCapacity) {
+      return BATTERY_CONFIG.maxCapacity; // 40kW máximo
+    }
+    
+    // Redondear al múltiplo de 5 más cercano dentro del rango
+    const roundedCapacity = Math.round(suggestedBatterySize / 5) * 5;
+    return Math.max(BATTERY_CONFIG.minCapacity, Math.min(roundedCapacity, BATTERY_CONFIG.maxCapacity));
   }, [systemSize]);
 
   // Calcular precio de la batería basado en la capacidad
   const batteryPrice = useMemo(() => {
     if (!wantsBattery) return 0;
     
-    const steps = (selectedCapacity - BATTERY_CONFIG.baseCapacity) / BATTERY_CONFIG.capacityIncrement;
-    return BATTERY_CONFIG.basePrice + (steps * BATTERY_CONFIG.priceIncrement);
+    return BATTERY_CONFIG.capacityPrices[selectedCapacity] || 0;
   }, [wantsBattery, selectedCapacity]);
 
   // Validar que la capacidad sea un múltiplo válido
@@ -35,19 +56,17 @@ export function useBatterySystem(systemSize) {
     
     const remainder = (selectedCapacity - BATTERY_CONFIG.baseCapacity) % BATTERY_CONFIG.capacityIncrement;
     return remainder === 0 && 
-           selectedCapacity >= BATTERY_CONFIG.baseCapacity && 
+           selectedCapacity >= BATTERY_CONFIG.minCapacity && 
            selectedCapacity <= BATTERY_CONFIG.maxCapacity;
   }, [wantsBattery, selectedCapacity]);
 
   // Obtener opciones válidas de batería para el selector
   const batteryOptions = useMemo(() => {
     const options = [];
-    for (let capacity = BATTERY_CONFIG.baseCapacity; 
+    for (let capacity = BATTERY_CONFIG.minCapacity; 
          capacity <= BATTERY_CONFIG.maxCapacity; 
          capacity += BATTERY_CONFIG.capacityIncrement) {
-      const price = BATTERY_CONFIG.basePrice + 
-                   ((capacity - BATTERY_CONFIG.baseCapacity) / BATTERY_CONFIG.capacityIncrement) * 
-                   BATTERY_CONFIG.priceIncrement;
+      const price = BATTERY_CONFIG.capacityPrices[capacity] || 0;
       options.push({
         value: capacity.toString(),
         label: `${capacity} kW - $${price.toLocaleString()}`,
