@@ -6,7 +6,26 @@ import {
 } from '@mantine/core';
 
 const PaymentSummary = () => {
-  const { totalNaturgyEnsa300Months, systemTotalPriceAdjusted } = useConsumption();
+  const { 
+    totalNaturgyEnsa, 
+    totalNewProjection,
+    totalNaturgyEnsaWithBattery,
+    totalNewProjectionWithBattery,
+    wantsBattery,
+    systemTotalPrice,
+    systemTotalPriceAdjusted,
+    batteryPrice
+  } = useConsumption();
+
+  // Determinar qué totales usar basado en si la batería está activa
+  const totalNaturgyEnsaToShow = wantsBattery ? totalNaturgyEnsaWithBattery : totalNaturgyEnsa;
+  const totalNewProjectionToShow = wantsBattery ? totalNewProjectionWithBattery : totalNewProjection;
+  
+  // Determinar qué precio total usar para el cálculo del ahorro
+  // Usar el precio sin impuestos (igual que arriba)
+  const totalSystemPrice = wantsBattery ? 
+    (systemTotalPriceAdjusted + batteryPrice) : 
+    (systemTotalPriceAdjusted || systemTotalPrice);
 
   return (
     <>
@@ -26,12 +45,12 @@ const PaymentSummary = () => {
             <Table.Tr>
               <Table.Td>
                 <Text size="xl" c="red.4">
-                  <NumberFormatter thousandSeparator prefix="$ " value={totalNaturgyEnsa300Months.toFixed(2)} />
+                  <NumberFormatter thousandSeparator prefix="$ " value={totalNaturgyEnsaToShow.toFixed(2)} />
                 </Text>
               </Table.Td>
               <Table.Td>
                 <Text size="xl" c="green.4">
-                <NumberFormatter thousandSeparator prefix="$ " value={(totalNaturgyEnsa300Months - systemTotalPriceAdjusted).toFixed(2)} />
+                <NumberFormatter thousandSeparator prefix="$ " value={(totalNaturgyEnsaToShow - totalSystemPrice).toFixed(2)} />
                 </Text>
               </Table.Td>
             </Table.Tr>

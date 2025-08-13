@@ -12,7 +12,7 @@ const InflationSelector = () => {
       <Grid.Col span={4}>
         <Select
           label="Escenario de inflación"
-          value={inflationRate.toString()}
+          value={inflationRate?.toString() || '3'}
           onChange={(value) => setInflationRate(Number(value))}
           data={[
             { value: '2', label: 'Inflación PA 2%' },

@@ -15,13 +15,18 @@ const NewProjectionChart = () => {
   const {
     loanRateFactor, setLoanRateFactor,
     loanMonthlyPayment,
+    loanMonthlyPaymentWithBattery,
+    loanMonthlyPaymentWithoutTax,
+    loanMonthlyPaymentWithBatteryWithoutTax,
     comparisonProjectionData,
+    systemTotalPrice,
     systemTotalPriceAdjusted,
-    totalNewProjectionSelectedPeriod,
+    batteryPrice,
     selectedPeriod, setSelectedPeriod,
+    wantsBattery,
   } = useConsumption();
 
-  // Función para obtener el texto del período
+  // Function to get period text
   const getPeriodText = (months) => {
     if (months === 12) return '12 Meses (1 Año)';
     if (months === 24) return '24 Meses (2 Años)';
@@ -31,6 +36,16 @@ const NewProjectionChart = () => {
     if (months === 150) return '150 Meses (12.5 Años)';
     return `${months} Meses`;
   };
+
+  // Determinar qué precio total mostrar y qué pago mensual usar
+  // Mostrar el precio sin impuestos (igual que arriba)
+  const displayTotalPrice = wantsBattery ? 
+    (systemTotalPriceAdjusted + batteryPrice) : 
+    (systemTotalPriceAdjusted || systemTotalPrice);
+  // Usar el pago mensual basado en el precio CON impuestos (para cálculos financieros correctos)
+  const displayMonthlyPayment = wantsBattery ? 
+    loanMonthlyPaymentWithBattery : 
+    loanMonthlyPayment;
 
   return (
     <Grid.Col span={{ lg: 6, base: 12 }}>
@@ -51,7 +66,7 @@ const NewProjectionChart = () => {
           />
           <Select
             label="Período de tiempo"
-            value={selectedPeriod.toString()}
+            value={selectedPeriod?.toString() || '150'}
             onChange={(value) => setSelectedPeriod(parseInt(value))}
             data={[
               { value: '150', label: '150 Meses (12.5 Años)' },
@@ -69,7 +84,7 @@ const NewProjectionChart = () => {
             <b>Precio total del sistema:</b>
           </Text>
           <Text>
-            <NumberFormatter thousandSeparator prefix="$ " value={systemTotalPriceAdjusted.toFixed(2)} />
+            <NumberFormatter thousandSeparator prefix="$ " value={displayTotalPrice.toFixed(2)} />
           </Text>
         </Group>
         <Group>
@@ -77,7 +92,7 @@ const NewProjectionChart = () => {
             <b>Pago mensual estimado:</b>
           </Text>
           <Text>
-            <NumberFormatter thousandSeparator prefix="$ " value={loanMonthlyPayment.toFixed(2)} />
+            <NumberFormatter thousandSeparator prefix="$ " value={displayMonthlyPayment.toFixed(2)} />
           </Text>
         </Group>
 

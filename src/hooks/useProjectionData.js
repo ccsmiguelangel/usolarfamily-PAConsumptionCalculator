@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0, growthRate = 3, loanRateFactor = '6.5', selectedPeriod = 150, inflationRate = 3) {
+export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0, selectedRate = 3, loanRateFactor = '6.5', selectedPeriod = 150) {
   // Data for comparison chart - always 25 years (300 months) regardless of selected period
   const comparisonProjectionData = useMemo(() => {
     if (loanMonthlyPayment <= 0 || averageMonthlyCost <= 0) return [];
@@ -11,8 +11,8 @@ export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0
     return Array.from({ length: totalMonths }, (_, i) => {
       const month = i + 1;
       
-      // Naturgy/Ensa: monthly cost with selected inflation rate
-      const naturgyMonthlyCost = averageMonthlyCost * Math.pow(1 + (inflationRate / 100), Math.floor(i / 12));
+      // Naturgy/Ensa: monthly cost with selected rate
+      const naturgyMonthlyCost = averageMonthlyCost * Math.pow(1 + (selectedRate / 100), Math.floor(i / 12));
       
       // New projection: monthly credit payment (financing for the selected period)
       let newProjectionMonthlyCost = 0;
@@ -28,19 +28,20 @@ export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0
         newProjection: newProjectionMonthlyCost
       };
     });
-  }, [loanMonthlyPayment, averageMonthlyCost, inflationRate, selectedPeriod]);
+  }, [loanMonthlyPayment, averageMonthlyCost, selectedRate, selectedPeriod]);
 
-  // Calculate total costs for the selected period (for summary calculations)
+  // Calculate total costs for 25 years (300 months) regardless of selected period
   const totalNaturgyEnsa = useMemo(() => {
     if (averageMonthlyCost <= 0) return 0;
     
     let total = 0;
-    for (let i = 0; i < selectedPeriod; i++) {
-      const naturgyMonthlyCost = averageMonthlyCost * Math.pow(1 + (inflationRate / 100), Math.floor(i / 12));
+    // Always calculate for 25 years (300 months)
+    for (let i = 0; i < 300; i++) {
+      const naturgyMonthlyCost = averageMonthlyCost * Math.pow(1 + (selectedRate / 100), Math.floor(i / 12));
       total += naturgyMonthlyCost;
     }
     return total;
-  }, [averageMonthlyCost, inflationRate, selectedPeriod]);
+  }, [averageMonthlyCost, selectedRate]);
 
   const totalNewProjection = useMemo(() => {
     if (loanMonthlyPayment <= 0) return 0;

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 
-export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 150, loanRateFactor = '6.5', inflationRate = 4) {
+export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 150, loanRateFactor = '6.5', selectedRate = 4, batteryPrice = 0) {
   const [systemPriceMultiplier, setSystemPriceMultiplier] = useState('');
 
   // Calculate approximate total system price
@@ -23,6 +23,24 @@ export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 15
   const systemTotalPriceWithNewTax = useMemo(() => {
     return systemTotalPriceAdjusted / 0.78;
   }, [systemTotalPriceAdjusted]);
+
+  // Precio total incluyendo batería
+  const systemTotalPriceWithBattery = useMemo(() => {
+    return systemTotalPrice + batteryPrice;
+  }, [systemTotalPrice, batteryPrice]);
+
+  const systemTotalPriceAdjustedWithBattery = useMemo(() => {
+    const systemPriceMultiplierNum = Number(systemPriceMultiplier) || 0;
+    if (systemPriceMultiplierNum >= -0.2 && calculatedTotalPanelsWatts > 0) {
+      return (calculatedTotalPanelsWatts * 1000 * (defaultPricePerWatt + systemPriceMultiplierNum)) + batteryPrice;
+    } else {
+      return (calculatedTotalPanelsWatts * 1000 * defaultPricePerWatt) + batteryPrice;
+    }
+  }, [calculatedTotalPanelsWatts, systemPriceMultiplier, batteryPrice]);
+
+  const systemTotalPriceWithNewTaxWithBattery = useMemo(() => {
+    return systemTotalPriceAdjustedWithBattery / 0.78;
+  }, [systemTotalPriceAdjustedWithBattery]);
 
   // Calculate loan factor for specific credit percentage and months
   const loanFactor = useMemo(() => {
@@ -68,12 +86,32 @@ export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 15
     
     // Return the base factor without inflation adjustment
     return baseFactor;
-  }, [selectedPeriod, loanRateFactor, inflationRate]);
+  }, [selectedPeriod, loanRateFactor, selectedRate]);
 
   // Monthly credit payment
   const loanMonthlyPayment = useMemo(() => {
     return systemTotalPriceWithNewTax * loanFactor;
   }, [systemTotalPriceWithNewTax, loanFactor]);
+
+  // Monthly credit payment with battery
+  const loanMonthlyPaymentWithBattery = useMemo(() => {
+    return systemTotalPriceWithNewTaxWithBattery * loanFactor;
+  }, [systemTotalPriceWithNewTaxWithBattery, loanFactor]);
+
+  // Monthly credit payment for comparison (always without battery for payment calculation)
+  const loanMonthlyPaymentForComparison = useMemo(() => {
+    return systemTotalPriceWithNewTax * loanFactor;
+  }, [systemTotalPriceWithNewTax, loanFactor]);
+
+  // Monthly credit payment based on price without taxes (for display)
+  const loanMonthlyPaymentWithoutTax = useMemo(() => {
+    return systemTotalPriceAdjusted * loanFactor;
+  }, [systemTotalPriceAdjusted, loanFactor]);
+
+  // Monthly credit payment with battery based on price without taxes (for display)
+  const loanMonthlyPaymentWithBatteryWithoutTax = useMemo(() => {
+    return (systemTotalPriceAdjusted + batteryPrice) * loanFactor;
+  }, [systemTotalPriceAdjusted, batteryPrice, loanFactor]);
 
   // Total paid in credit
   const loanTotalPaid = useMemo(() => {
@@ -91,7 +129,14 @@ export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 15
     systemTotalPrice,
     systemTotalPriceWithNewTax,
     systemTotalPriceAdjusted,
+    systemTotalPriceWithBattery,
+    systemTotalPriceAdjustedWithBattery,
+    systemTotalPriceWithNewTaxWithBattery,
     loanMonthlyPayment,
+    loanMonthlyPaymentWithBattery,
+    loanMonthlyPaymentForComparison,
+    loanMonthlyPaymentWithoutTax,
+    loanMonthlyPaymentWithBatteryWithoutTax,
     loanTotalPaid,
     totalNewProjectionSelectedPeriod,
   };

@@ -98,56 +98,56 @@ const ConsumptionTableInputs = () => {
 
     <Grid.Col span={12}>
       <Paper p="md" withBorder>
-        <Table.ScrollContainer type="native" minWidth={500} >
-        <Table striped highlightOnHover withColumnBorders>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Mes</Table.Th>
-              <Table.Th>Consumo</Table.Th>
-              <Table.Th>Costo Mensual</Table.Th>
-              <Table.Th>Precio</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {consumptions.map((row) => (
-              <Table.Tr key={row.id}>
-                <Table.Td>{row.month}</Table.Td>
-                <Table.Td>
-                  <NumberInput
-                    value={row.consumption}
-                    onChange={(e) => handleInputChange(row.id, 'consumption', Number(e))}
-                    rightSection="kWh"
-                    rightSectionWidth={50}
-                    hideControls
-                    placeholder="Ingrese consumo"
-                    decimalScale={0}
-                  />
-                </Table.Td>
-                <Table.Td>
-                  {row.id === 0 ? (
-                    <NumberInput
-                      value={row.cost}
-                      onChange={(e) => handleInputChange(row.id, 'cost', Number(e))}
-                      placeholder="Ingrese costo mensual"
-                      decimalScale={2}
-                      leftSection="$"
-                      hideControls 
-                    />
-                  ) : (
-                    <NumberInput
-                      value={Number(row.cost).toFixed(2)}
-                      disabled
-                      decimalScale={2}
-                      leftSection="$"
-                      hideControls 
-                    />
-                  )}
-                </Table.Td>
-                <Table.Td>
-                  <NumberFormatter thousandSeparator prefix="$ " value={row.price.toFixed(2)}/>
-                </Table.Td>
+        <Table.ScrollContainer type="native" minWidth={500}>
+          <Table striped highlightOnHover withColumnBorders>
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Mes</Table.Th>
+                <Table.Th>Consumo</Table.Th>
+                <Table.Th>Costo Mensual</Table.Th>
+                <Table.Th>Precio</Table.Th>
               </Table.Tr>
-            ))}
+            </Table.Thead>
+            <Table.Tbody>
+              {consumptions.map((row) => (
+                <Table.Tr key={row.id}>
+                  <Table.Td>{row.month}</Table.Td>
+                  <Table.Td>
+                    <NumberInput
+                      value={row.consumption}
+                      onChange={(e) => handleInputChange(row.id, 'consumption', Number(e))}
+                      rightSection="kWh"
+                      rightSectionWidth={50}
+                      hideControls
+                      placeholder="Ingrese consumo"
+                      decimalScale={0}
+                    />
+                  </Table.Td>
+                  <Table.Td>
+                    {row.id === 0 ? (
+                      <NumberInput
+                        value={row.cost}
+                        onChange={(e) => handleInputChange(row.id, 'cost', Number(e))}
+                        placeholder="Ingrese costo mensual"
+                        decimalScale={2}
+                        leftSection="$"
+                        hideControls 
+                      />
+                    ) : (
+                      <NumberInput
+                        value={Number(row.cost).toFixed(2)}
+                        disabled
+                        decimalScale={2}
+                        leftSection="$"
+                        hideControls 
+                      />
+                    )}
+                  </Table.Td>
+                  <Table.Td>
+                    <NumberFormatter thousandSeparator prefix="$ " value={row.price.toFixed(2)}/>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
               {/* Fila de promedios */}
               <Table.Tr style={{ fontWeight: 'bold' }}>
                 <Table.Td>PROMEDIO</Table.Td>
@@ -155,16 +155,16 @@ const ConsumptionTableInputs = () => {
                 <Table.Td><NumberFormatter thousandSeparator prefix="$ " value={averageMonthlyCost.toFixed(2)} /></Table.Td>
                 <Table.Td><NumberFormatter thousandSeparator prefix="$ " value={averagePrice.toFixed(2)}/></Table.Td>
               </Table.Tr>
-                {/* Fila de totales */}
+              {/* Fila de totales */}
               <Table.Tr style={{ fontWeight: 'bold' }}>
                 <Table.Td>TOTAL</Table.Td>
                 <Table.Td><NumberFormatter thousandSeparator suffix=" kWh" value={totalConsumption.toFixed(2)} /></Table.Td>
                 <Table.Td><NumberFormatter thousandSeparator prefix="$ " value={typeof totalMonthlyCost === 'number' && !isNaN(totalMonthlyCost.toFixed(2)) ? totalMonthlyCost.toFixed(2) : 0} /></Table.Td>
                 <Table.Td>-</Table.Td> {/* No se suma el precio */}
               </Table.Tr>
-          </Table.Tbody>
-        </Table>
-      </Table.ScrollContainer>
+            </Table.Tbody>
+          </Table>
+        </Table.ScrollContainer>
       </Paper>
     </Grid.Col>
   </>

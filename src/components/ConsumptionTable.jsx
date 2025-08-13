@@ -1,4 +1,3 @@
-import { useConsumption } from './ConsumptionContext';
 import { 
   Container, 
   Grid
@@ -14,14 +13,6 @@ import RoofPanelCalculator from './RoofPanelCalculator'
 import ClientInfoForm from './ClientInfoForm';
 
 const ConsumptionTable = () => {
-  const consumptionData = useConsumption();
-  
-  // Extraer valores de manera segura con valores por defecto
-  const {
-    totalNaturgyEnsa = 0,
-    totalNewProjection = 0
-  } = consumptionData || {};
-
   return (
     <Container size="xl" p="md">
       <HeaderSection />

@@ -65,10 +65,10 @@ export function useCostCalculations(consumptions) {
   }, [averageMonthlyCost, inflationRate]);
 
   return {
-    selectedRate, setSelectedRate,
+    selectedRate: selectedRate || 3, setSelectedRate,
     averageCost, setAverageCost,
     initialPrice, setInitialPrice,
-    inflationRate, setInflationRate,
+    inflationRate: inflationRate || 3, setInflationRate,
     averageMonthlyCost,
     projectionData,
     chartData,

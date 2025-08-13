@@ -80,4 +80,41 @@ To migrate from the original context to the refactored one:
    import { ConsumptionProvider } from './ConsumptionContext';
    ```
 
-2. The `useConsumption()` hook maintains the same interface, so you don't need to change the components that use it. 
+2. The `useConsumption()` hook maintains the same interface, so you don't need to change the components that use it.
+
+## Technical Implementation
+
+Each hook is designed to be independent and can be imported and used separately:
+
+```jsx
+import { useConsumptionData } from '../hooks/useConsumptionData';
+import { useSolarPanelCalculations } from '../hooks/useSolarPanelCalculations';
+
+function MyComponent() {
+  const { consumptionData, averages } = useConsumptionData();
+  const { systemSize, panelCount } = useSolarPanelCalculations();
+  
+  // Use the data...
+}
+```
+
+## File Structure
+
+```
+hooks/
+├── index.js                    # Main exports
+├── useConsumptionData.js       # Consumption data
+├── useCostCalculations.js      # Cost calculations
+├── useSolarPanelCalculations.js # Solar panel calculations
+├── useSystemPricing.js         # System pricing
+├── useConsumptionActions.js    # Consumption actions
+├── useProjectionData.js        # Projection data
+└── README.md                   # This file
+```
+
+## Development Notes
+
+- All hooks are optimized for React 18+
+- Use context pattern for state sharing
+- Implement memoization to avoid unnecessary recalculations
+- Follow React hooks best practices 

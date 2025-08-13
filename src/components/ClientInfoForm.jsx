@@ -31,15 +31,51 @@ const ClientInfoForm = () => {
     address: clientInfo.address || ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [emailStatus, setEmailStatus] = useState(null);
 
   const handleChange = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setClientInfo(form);
-    setSubmitted(true);
+    setSending(true);
+    setEmailStatus(null);
+
+    try {
+      const response = await fetch('http://localhost:3001/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          clientInfo: form,
+          averageConsumption,
+          totalConsumption,
+          totalNaturgyEnsa,
+          totalNewProjection,
+          systemSize,
+          numberOfPanels
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setEmailStatus('success');
+        setSubmitted(true);
+      } else {
+        setEmailStatus('error');
+        console.error('Error al enviar email:', data.message);
+      }
+    } catch (error) {
+      setEmailStatus('error');
+      console.error('Error de conexión:', error);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -177,10 +213,26 @@ const ClientInfoForm = () => {
                   required
                 />
               </Grid.Col>
-              <Grid.Col span={12} style={{ display: 'flex', justifyContent: 'center' }}>
-                <Button type="submit" color="blue" size='lg'>
-                  Imprimir Propuesta
+              <Grid.Col span={12} style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+                <Button 
+                  type="submit" 
+                  color="blue" 
+                  size='lg'
+                  loading={sending}
+                  disabled={sending}
+                >
+                  {sending ? 'Enviando...' : 'Enviar Propuesta por Email'}
                 </Button>
+                {emailStatus === 'success' && (
+                  <Text size="sm" c="green.7" fw={500}>
+                    ✓ Email enviado exitosamente
+                  </Text>
+                )}
+                {emailStatus === 'error' && (
+                  <Text size="sm" c="red.7" fw={500}>
+                    ✗ Error al enviar email
+                  </Text>
+                )}
               </Grid.Col>
             </Grid>
           </form>
