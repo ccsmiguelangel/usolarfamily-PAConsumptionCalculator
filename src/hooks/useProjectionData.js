@@ -3,7 +3,9 @@ import { useMemo } from 'react';
 export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0, selectedRate = 3, loanRateFactor = '6.5', selectedPeriod = 150) {
   // Data for comparison chart - always 25 years (300 months) regardless of selected period
   const comparisonProjectionData = useMemo(() => {
-    if (loanMonthlyPayment <= 0 || averageMonthlyCost <= 0) return [];
+    // Solo necesitamos loanMonthlyPayment para generar la gráfica
+    // averageMonthlyCost puede ser 0 (solo batería) o > 0 (con paneles)
+    if (loanMonthlyPayment <= 0) return [];
     
     // Always show 25 years (300 months) in the chart
     const totalMonths = 300;
@@ -11,8 +13,10 @@ export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0
     return Array.from({ length: totalMonths }, (_, i) => {
       const month = i + 1;
       
-      // Naturgy/Ensa: monthly cost with selected rate
-      const naturgyMonthlyCost = averageMonthlyCost * Math.pow(1 + (selectedRate / 100), Math.floor(i / 12));
+      // Naturgy/Ensa: monthly cost with selected rate (puede ser 0 si no hay consumo)
+      const naturgyMonthlyCost = averageMonthlyCost > 0 ? 
+        averageMonthlyCost * Math.pow(1 + (selectedRate / 100), Math.floor(i / 12)) : 
+        0;
       
       // New projection: monthly credit payment (financing for the selected period)
       let newProjectionMonthlyCost = 0;
@@ -32,6 +36,7 @@ export function useProjectionData(loanMonthlyPayment = 0, averageMonthlyCost = 0
 
   // Calculate total costs for 25 years (300 months) regardless of selected period
   const totalNaturgyEnsa = useMemo(() => {
+    // Si no hay costo mensual, retornar 0 (caso de solo batería)
     if (averageMonthlyCost <= 0) return 0;
     
     let total = 0;

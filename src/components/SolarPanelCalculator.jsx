@@ -142,7 +142,7 @@ const SolarPanelCalculator = () => {
         </Grid>
         {(!panelWatts || (Number(panelWatts) === 0) || !filledConsumptions) ? (
           <Alert color="red" icon={<IconAlertTriangle size={18} />}>
-            Añade valor de mes faltante y los watts por panel.
+            Añade valor de mes faltante y los watts por panel, o selecciona una batería para continuar.
           </Alert>
         ) : (
           <Table.ScrollContainer type="native" minWidth={500} >

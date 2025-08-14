@@ -13,10 +13,16 @@ export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 15
   // Price adjusted according to multiplier
   const systemTotalPriceAdjusted = useMemo(() => {
     const systemPriceMultiplierNum = Number(systemPriceMultiplier) || 0;
-    if (systemPriceMultiplierNum >= -0.2 && calculatedTotalPanelsWatts > 0) {
-      return calculatedTotalPanelsWatts * 1000 * (defaultPricePerWatt + systemPriceMultiplierNum);
+    if (calculatedTotalPanelsWatts > 0) {
+      // Con paneles: aplicar multiplicador si existe
+      if (systemPriceMultiplierNum >= -0.2) {
+        return calculatedTotalPanelsWatts * 1000 * (defaultPricePerWatt + systemPriceMultiplierNum);
+      } else {
+        return calculatedTotalPanelsWatts * 1000 * defaultPricePerWatt;
+      }
     } else {
-      return calculatedTotalPanelsWatts * 1000 * defaultPricePerWatt;
+      // Solo batería: retornar 0 (no hay paneles)
+      return 0;
     }
   }, [calculatedTotalPanelsWatts, systemPriceMultiplier]);
 
@@ -31,10 +37,16 @@ export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 15
 
   const systemTotalPriceAdjustedWithBattery = useMemo(() => {
     const systemPriceMultiplierNum = Number(systemPriceMultiplier) || 0;
-    if (systemPriceMultiplierNum >= -0.2 && calculatedTotalPanelsWatts > 0) {
-      return (calculatedTotalPanelsWatts * 1000 * (defaultPricePerWatt + systemPriceMultiplierNum)) + batteryPrice;
+    if (calculatedTotalPanelsWatts > 0) {
+      // Con paneles: aplicar multiplicador si existe
+      if (systemPriceMultiplierNum >= -0.2) {
+        return (calculatedTotalPanelsWatts * 1000 * (defaultPricePerWatt + systemPriceMultiplierNum)) + batteryPrice;
+      } else {
+        return (calculatedTotalPanelsWatts * 1000 * defaultPricePerWatt) + batteryPrice;
+      }
     } else {
-      return (calculatedTotalPanelsWatts * 1000 * defaultPricePerWatt) + batteryPrice;
+      // Solo batería: retornar solo el precio de la batería
+      return batteryPrice;
     }
   }, [calculatedTotalPanelsWatts, systemPriceMultiplier, batteryPrice]);
 

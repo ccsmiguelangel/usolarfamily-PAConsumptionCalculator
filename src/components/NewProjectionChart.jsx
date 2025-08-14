@@ -6,9 +6,11 @@ import {
   NumberFormatter,
   Select,
   Group,
-  Text
+  Text,
+  Alert
 } from '@mantine/core';
 import { AreaChart } from '@mantine/charts';
+import { IconAlertTriangle } from '@tabler/icons-react';
 import PaymentSummary from './PaymentSummary';
 
 const NewProjectionChart = () => {
@@ -37,6 +39,12 @@ const NewProjectionChart = () => {
     return `${months} Meses`;
   };
 
+  // Validar si debemos mostrar la gráfica
+  const shouldShowChart = () => {
+    // Mostrar gráfica si hay batería O si hay paneles (precio del sistema > 0)
+    return wantsBattery || (systemTotalPrice > 0 || systemTotalPriceAdjusted > 0);
+  };
+
   // Determinar qué precio total mostrar y qué pago mensual usar
   // Mostrar el precio sin impuestos (igual que arriba)
   const displayTotalPrice = wantsBattery ? 
@@ -46,6 +54,34 @@ const NewProjectionChart = () => {
   const displayMonthlyPayment = wantsBattery ? 
     loanMonthlyPaymentWithBattery : 
     loanMonthlyPayment;
+
+  // Debug: Mostrar información de las variables
+  console.log('Debug NewProjectionChart:', {
+    wantsBattery,
+    systemTotalPrice,
+    systemTotalPriceAdjusted,
+    batteryPrice,
+    displayTotalPrice,
+    displayMonthlyPayment,
+    comparisonProjectionDataLength: comparisonProjectionData?.length || 0,
+    shouldShowChart: shouldShowChart()
+  });
+
+  // Si no hay datos suficientes, mostrar mensaje
+  if (!shouldShowChart()) {
+    return (
+      <Grid.Col span={{ lg: 6, base: 12 }}>
+        <Paper p="md" withBorder>
+          <Title order={2} mb="md" c="blue.9">
+            Comparación a 25 Años
+          </Title>
+          <Alert color="gray" icon={<IconAlertTriangle size={18} />}>
+            Para mostrar la gráfica, necesitas seleccionar una batería o completar los datos de consumo y watts por panel.
+          </Alert>
+        </Paper>
+      </Grid.Col>
+    );
+  }
 
   return (
     <Grid.Col span={{ lg: 6, base: 12 }}>
@@ -97,13 +133,14 @@ const NewProjectionChart = () => {
         </Group>
 
         <div style={{ width: '100%', marginTop: '2rem' }}>
-          <AreaChart
-            h={400}
-            data={comparisonProjectionData}
-            dataKey="month"
-            type="linear"
-            curveType="linear"
-            connectNulls
+          {comparisonProjectionData && comparisonProjectionData.length > 0 ? (
+            <AreaChart
+              h={400}
+              data={comparisonProjectionData}
+              dataKey="month"
+              type="linear"
+              curveType="linear"
+              connectNulls
             series={[
               {
                 name: 'naturgy',
@@ -176,6 +213,11 @@ const NewProjectionChart = () => {
               }
             }}
           />
+          ) : (
+            <Alert color="yellow" icon={<IconAlertTriangle size={18} />}>
+              No hay datos suficientes para mostrar la gráfica. Verifica que tengas un pago mensual válido.
+            </Alert>
+          )}
         </div>
         <PaymentSummary />
       </Paper>
