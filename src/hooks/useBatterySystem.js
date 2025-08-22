@@ -13,7 +13,7 @@ export function useBatterySystem(systemSize) {
       15: 9699,   // 15kW - $9,699
       20: 12599,  // 20kW - $12,599
       // 25: 15399,  // 25kW - $15,999 (precio razonable intermedio)
-      30: 19399,  // 30kW - $18,999 (precio razonable intermedio)
+      30: 20997,  // 30kW - $18,999 (precio razonable intermedio)
       // 35: 21999,  // 35kW - $21,999 (precio razonable intermedio)
       40: 25199   // 40kW - $25,199 (como dos de 20kW)
     }
