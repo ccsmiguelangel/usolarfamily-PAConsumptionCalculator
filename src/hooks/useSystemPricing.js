@@ -4,9 +4,9 @@ export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 15
   const [systemPriceMultiplier, setSystemPriceMultiplier] = useState('');
 
   // Calculate approximate total system price
-  const defaultPricePerWatt = 1.2;
-  const maxPriceAdjustment = 0.8;
-  const minPriceAdjustment = -0.2;
+  const defaultPricePerWatt = 1.1;
+  const maxPriceAdjustment = 0.9;
+  const minPriceAdjustment = -0.1;
   
   const systemTotalPrice = useMemo(() => {
     return calculatedTotalPanelsWatts > 0 ? calculatedTotalPanelsWatts * 1000 * defaultPricePerWatt : 0;
