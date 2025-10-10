@@ -83,7 +83,7 @@ export function useSystemPricing(calculatedTotalPanelsWatts, selectedPeriod = 15
       '120-6.5': 0.011355,
       '120-10.5': 0.013493,
       '150-6.5': 0.009755,
-      '150-10.5': 0.011998
+      '150-10.5': 0.013518 // 0.011998
     };
     
     // Create key for the specific combination
